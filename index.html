@@ -1,0 +1,1426 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Шуточный сайт про тренд «грязнулька vs серьёзка»: приложение знакомств с анкетами, мэтчем и перепиской, конструктор образа, игры и бинго.">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Грязнулька vs серьёзка</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800&family=Lora:ital,wght@1,500;1,700&family=Manrope:wght@400;600;800&display=swap">
+<style>
+/* Layout: split-screen meme battle; black neon half vs cream bookish half, sections below alternate the two moods */
+:root{
+  --bg:#f4f1f6; --fg:#1c1820; --muted:#6b6372; --line:#e2dbe8; --card:#ffffff;
+  --dirty:#141117; --dirty-fg:#f4eef8; --neon:#e6337f;
+  --serious:#ece4d1; --serious-fg:#3b3426; --sage:#5f7f5c;
+  --d-font:"Unbounded","Arial Black",system-ui,sans-serif;
+  --s-font:"Lora",Georgia,"Times New Roman",serif;
+  --body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#121015; --fg:#efe9f3; --muted:#a79fae; --line:#2e2834; --card:#1c1820;
+  --dirty:#0a090c; --dirty-fg:#f4eef8; --neon:#ff5c9d; --serious:#2c2820; --serious-fg:#efe6d2; --sage:#9bbd97; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121015; --fg:#efe9f3; --muted:#a79fae; --line:#2e2834; --card:#1c1820;
+  --dirty:#0a090c; --dirty-fg:#f4eef8; --neon:#ff5c9d; --serious:#2c2820; --serious-fg:#efe6d2; --sage:#9bbd97; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.6}
+.wrap{max-width:980px;margin:0 auto;padding-block:32px 64px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:80px}
+h2{font-family:var(--d-font);font-weight:800;font-size:clamp(28px,5vw,44px);line-height:1.1;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2 em{font-family:var(--s-font);font-weight:700;letter-spacing:0}
+h3{margin:0;font-size:19px}
+p{margin:0;max-width:62ch}
+section{display:flex;flex-direction:column;gap:22px;scroll-margin-top:24px}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:800;color:var(--neon)}
+.muted{color:var(--muted)}
+button{font:inherit}
+.btn{font-weight:800;border:0;border-radius:999px;padding:11px 20px;cursor:pointer;background:var(--fg);color:var(--bg)}
+.btn.neon{background:var(--neon);color:#fff}
+.btn.ghost{background:transparent;color:var(--fg);box-shadow:inset 0 0 0 2px var(--line)}
+.btn:hover{filter:brightness(1.1)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--neon);outline-offset:3px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* hero */
+.hero{display:flex;flex-direction:column;gap:18px}
+.split{display:grid;grid-template-columns:var(--l,1fr) var(--r,1fr);border-radius:28px;overflow:hidden;min-height:340px;transition:grid-template-columns .25s}
+.half{padding:28px clamp(16px,4vw,36px);display:flex;flex-direction:column;justify-content:flex-end;gap:12px;min-width:0;position:relative;overflow:hidden}
+.half.d{background:var(--dirty);color:var(--dirty-fg)}
+.half.s{background:var(--serious);color:var(--serious-fg)}
+.half .word{margin:0;line-height:.95;overflow-wrap:anywhere;position:relative}
+.half.d .word{font-family:var(--d-font);font-weight:800;font-size:clamp(30px,6.4vw,64px);text-transform:lowercase}
+.half.d .word span{color:var(--neon)}
+.half.s .word{font-family:var(--s-font);font-style:italic;font-weight:700;font-size:clamp(34px,7vw,72px)}
+.half ul{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px;position:relative}
+.half li{font-size:13px;font-weight:800;padding:4px 10px;border-radius:999px}
+.half.d li{background:#2a2430;color:var(--dirty-fg)}
+.half.s li{background:color-mix(in srgb,var(--serious-fg) 10%,transparent)}
+.vs{position:absolute;top:18px;font-family:var(--d-font);font-weight:800;font-size:13px;letter-spacing:.2em;opacity:.6}
+.half.d .vs{right:18px}.half.s .vs{left:18px}
+.glow{position:absolute;width:180px;height:180px;border-radius:50%;background:var(--neon);filter:blur(70px);opacity:.45;top:-40px;left:-30px}
+@media (max-width:620px){.split{grid-template-columns:1fr!important}.half{min-height:200px}}
+.vibe{display:flex;flex-direction:column;gap:6px;background:var(--card);border-radius:20px;padding:16px 20px}
+.vibe label{font-weight:800}
+.vibe input{width:100%;accent-color:var(--neon)}
+.vibe .ends{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted);font-weight:700}
+.vibe output{font-weight:800;color:var(--fg);text-align:center}
+.lead{font-size:19px}
+
+/* explainer */
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:620px){.two{grid-template-columns:1fr}}
+.card{border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card.d{background:var(--dirty);color:var(--dirty-fg)}
+.card.s{background:var(--serious);color:var(--serious-fg)}
+.card.d h3{font-family:var(--d-font);font-weight:800}
+.card.s h3{font-family:var(--s-font);font-style:italic;font-size:22px}
+.card ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.note{border-left:4px solid var(--neon);padding:4px 0 4px 16px;color:var(--muted)}
+
+/* dress-up */
+.dress{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:720px){.dress{grid-template-columns:1fr}}
+.figure{position:relative;width:100%;max-width:300px;aspect-ratio:240/400;border-radius:24px;overflow:hidden;justify-self:center;background:var(--card)}
+.figure svg{display:block;width:100%;height:100%}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.flash.go{animation:flash .5s ease-out}
+@keyframes flash{0%{opacity:0}30%{opacity:.95}100%{opacity:0}}
+.figure.spin svg{animation:spin .5s ease-in-out}
+@keyframes spin{50%{transform:scaleX(0)}}
+.controls{display:flex;flex-direction:column;gap:16px;min-width:0}
+.cat{display:flex;flex-direction:column;gap:6px}
+.cat b{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border:2px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:5px 12px;cursor:pointer;font-weight:600;font-size:15px}
+.chips button[aria-pressed="true"]{border-color:var(--neon);color:var(--neon);font-weight:800}
+.meter{display:flex;flex-direction:column;gap:6px;background:var(--card);border-radius:18px;padding:14px 18px}
+.meter .bar{height:12px;border-radius:6px;background:linear-gradient(90deg,var(--sage),#c8b98f 45%,#8a5aa0 70%,var(--neon));position:relative}
+.meter .pin{position:absolute;top:-6px;width:6px;height:24px;border-radius:3px;background:var(--fg);transform:translateX(-50%);transition:left .4s cubic-bezier(.2,.8,.2,1)}
+.meter .ends{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);font-weight:700}
+.meter p{font-weight:800}
+
+/* bingo */
+.bingo{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;max-width:640px;width:100%}
+.bingo button{aspect-ratio:1;max-width:100%;border:2px solid var(--line);background:var(--card);color:var(--fg);border-radius:14px;padding:4px;font-size:clamp(10px,2.3vw,14px);font-weight:700;line-height:1.2;cursor:pointer;overflow:hidden;overflow-wrap:anywhere;hyphens:auto}
+.bingo button[aria-pressed="true"]{background:var(--dirty);color:var(--dirty-fg);border-color:var(--dirty)}
+.bingo button.free{background:var(--neon);color:#fff;border-color:var(--neon);font-family:var(--d-font);cursor:default;opacity:1}
+.bingo button.win{box-shadow:0 0 0 3px var(--neon)}
+.stats{display:flex;gap:24px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.stats div{display:flex;flex-direction:column}
+.stats b{font-size:24px;font-family:var(--d-font)}
+.stats span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+
+/* caption generator */
+.phone{width:100%;max-width:320px;aspect-ratio:9/14;border-radius:34px;background:var(--dirty);color:var(--dirty-fg);padding:20px 64px 24px 20px;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;position:relative;overflow:hidden;box-shadow:0 0 0 8px var(--line)}
+.phone .glow{left:auto;right:-40px;top:30%}
+.phone .cap{font-weight:800;font-size:19px;line-height:1.3;position:relative;overflow-wrap:anywhere}
+.phone .tags{color:var(--neon);font-weight:700;font-size:14px;position:relative}
+.phone .user{font-weight:800;font-size:14px;position:relative;opacity:.8}
+.phone .side{position:absolute;right:12px;bottom:110px;display:flex;flex-direction:column;gap:14px;align-items:center;font-size:12px;font-weight:800}
+.phone .side span{display:flex;flex-direction:column;align-items:center}
+.phone .side i{display:block;width:34px;height:34px;border-radius:50%;background:#2a2430;margin-bottom:2px}
+.capwrap{display:grid;grid-template-columns:auto minmax(0,1fr);gap:28px;align-items:center}
+@media (max-width:640px){.capwrap{grid-template-columns:1fr;justify-items:center}}
+
+/* comments */
+.comments{display:flex;flex-direction:column;gap:10px;max-width:560px}
+.cmt{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:10px;align-items:start;background:var(--card);border-radius:16px;padding:12px 14px}
+.cmt .av{width:36px;height:36px;border-radius:50%}
+.cmt b{font-size:14px}
+.cmt p{font-size:15px;overflow-wrap:anywhere}
+.cmt .like{border:0;background:none;color:var(--muted);cursor:pointer;font-weight:800;font-variant-numeric:tabular-nums;display:flex;flex-direction:column;align-items:center;padding:0 4px;font-size:14px}
+.cmt .like[aria-pressed="true"]{color:var(--neon)}
+.cmtform{display:flex;gap:8px;flex-wrap:wrap;max-width:560px}
+.cmtform input{flex:1 1 220px;min-width:0;font:inherit;padding:10px 16px;border-radius:999px;border:2px solid var(--line);background:var(--card);color:var(--fg)}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(140px);background:var(--neon);color:#fff;font-weight:800;padding:12px 22px;border-radius:999px;transition:transform .3s;z-index:30;max-width:calc(100% - 32px);text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+footer{color:var(--muted);font-size:14px;display:flex;flex-direction:column;gap:6px}
+
+/* nav */
+nav.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line);
+  padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:21;background:var(--bg)}
+nav.top ul{max-width:980px;margin:0 auto;padding:0;list-style:none;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+nav.top a{display:block;white-space:nowrap;text-decoration:none;color:var(--fg);font-weight:700;font-size:14px;padding:6px 12px;border-radius:999px}
+nav.top a:hover{background:var(--card);color:var(--neon)}
+nav.top a:focus-visible{outline:3px solid var(--neon)}
+section{scroll-margin-top:64px}
+
+/* pair quiz */
+.figure.ghost svg{opacity:.35;filter:grayscale(1)}
+.figure .qmark{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--d-font);font-size:96px;color:var(--neon);pointer-events:none}
+.pq-prog{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.pq-prog i{display:block;height:100%;width:0;background:var(--neon);transition:width .3s}
+.pq-top{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-weight:700;font-size:14px}
+.linkbtn{background:none;border:0;color:var(--neon);font-weight:800;cursor:pointer;padding:0}
+.pq-q{font-family:var(--d-font);font-weight:800;font-size:clamp(20px,3.4vw,26px);line-height:1.25;text-wrap:balance}
+.pq-a{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media (max-width:520px){.pq-a{grid-template-columns:1fr}}
+.pq-a button{text-align:left;border:2px solid var(--line);background:var(--card);color:var(--fg);border-radius:16px;padding:12px 14px;cursor:pointer;font-weight:600;transition:transform .15s,border-color .15s}
+.pq-a button:hover{border-color:var(--neon);transform:translateY(-2px)}
+.pq-a button.picked{background:var(--neon);border-color:var(--neon);color:#fff}
+.pq-res{display:flex;flex-direction:column;gap:14px}
+.pq-res h3{font-family:var(--d-font);font-weight:800;font-size:clamp(26px,5vw,40px);line-height:1.1;color:var(--neon)}
+.pq-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:520px){.pq-facts{grid-template-columns:1fr}}
+.pq-facts div{background:var(--card);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.pq-facts span{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:800}
+
+/* swipe quiz: dating app */
+.app{width:100%;max-width:420px;align-self:center;display:flex;flex-direction:column;gap:14px;background:var(--card);border-radius:36px;padding:16px 14px 18px;box-shadow:0 0 0 8px var(--line)}
+.app-bar{display:flex;justify-content:space-between;align-items:baseline;padding:0 8px;font-variant-numeric:tabular-nums;color:var(--muted);font-weight:800;font-size:14px}
+.app-bar b{font-family:var(--d-font);font-size:22px;color:var(--neon);letter-spacing:-.02em}
+.deck{position:relative;height:640px}
+.swcard{position:absolute;inset:0;z-index:2;background:var(--bg);border-radius:26px;overflow:hidden;display:flex;flex-direction:column;cursor:grab;touch-action:pan-y;user-select:none;box-shadow:0 14px 40px -18px rgba(20,17,23,.5);transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .3s}
+.swcard.drag{transition:none;cursor:grabbing}
+.swcard:focus-visible{outline:3px solid var(--neon);outline-offset:3px}
+.pf-photo,.m-photo{position:relative;height:280px;flex:none;overflow:hidden}
+.pf-photo svg,.m-photo svg{display:block;width:100%;height:100%}
+.pf-name{position:absolute;left:0;right:0;bottom:0;padding:40px 16px 12px;background:linear-gradient(transparent,rgba(10,9,12,.85));color:#fff;display:flex;flex-direction:column}
+.pf-name b{font-size:26px;font-weight:800;line-height:1.1}
+.pf-name span{font-size:13px;font-weight:700;opacity:.85}
+.pf-name span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:#5bd16a;margin-right:6px}
+.pf-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px;min-height:0}
+.pf-seek{align-self:flex-start;font-size:13px;font-weight:800;padding:4px 12px;border-radius:999px}
+.pf-seek.s{background:color-mix(in srgb,var(--sage) 22%,transparent);color:var(--sage)}
+.pf-seek.d{background:color-mix(in srgb,var(--neon) 18%,transparent);color:var(--neon)}
+.pf-bio{font-size:15px;line-height:1.45}
+.swcard{overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+.pf-bars{position:absolute;top:8px;left:10px;right:10px;display:flex;gap:4px;z-index:2}
+.pf-bars i{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.45)}
+.pf-bars i.on{background:#fff}
+.pf-photo{cursor:pointer}
+.pf-sec{display:flex;flex-direction:column;gap:4px}
+.pf-sec h4{margin:0;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.pf-sec p{font-size:15px}
+.pf-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.pf-stats div{background:var(--card);border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.pf-stats small{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800}
+.pf-stats b{font-size:14px;line-height:1.3}
+.jl{display:block;height:5px;border-radius:3px;background:var(--line);overflow:hidden}
+.jl em{display:block;height:100%;background:linear-gradient(90deg,var(--sage),var(--neon))}
+.pf-end{display:none}
+.deck{height:600px;height:clamp(430px,calc(100vh - 190px),600px);height:clamp(430px,calc(100svh - 190px),600px)}
+.swcard{overflow:hidden}
+.swcard .pf-photo{height:auto;flex:1 1 0;min-height:140px}
+.pf-body{gap:8px;padding:12px 14px 14px;flex:none}
+.pf-row{display:flex;flex-direction:column;gap:4px}
+.pf-meta{font-size:13px;font-weight:700;color:var(--muted)}
+.pf-bio{font-size:14px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.pf-prompt p{font-size:16px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.gm{display:flex;flex-direction:column;gap:3px}
+.gm-top{display:flex;justify-content:space-between;align-items:baseline}
+.gm-top small{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:800}
+.gm-top b{font-family:var(--d-font);font-size:16px;color:var(--neon)}
+.gm-bar{display:block;height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.gm-bar em{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--sage),#c8b98f 45%,var(--neon))}
+.gm-ends{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-weight:700}
+@media (max-width:520px){
+  .app{padding:10px 8px 12px;border-radius:28px;box-shadow:0 0 0 4px var(--line);gap:10px}
+  .app-bar{padding:0 6px}
+  .sw-btns button{width:54px;height:54px;font-size:22px}
+  .likes-row{min-height:0}
+  .pf-name b{font-size:22px}
+}
+.pf-facts{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;font-weight:700;color:var(--muted)}
+.pf-facts span+span::before{content:"·";margin-right:12px}
+.pf-tags{display:flex;flex-wrap:wrap;gap:5px}
+.pf-tags span{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid var(--line)}
+.pf-prompt{background:var(--card);border-radius:14px;padding:10px 12px}
+.pf-prompt span{display:block;font-size:12px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.pf-prompt p{font-family:var(--s-font);font-style:italic;font-size:17px;line-height:1.3}
+.stamp{position:absolute;top:24px;z-index:3;font-family:var(--d-font);font-weight:800;font-size:30px;padding:2px 12px;border:4px solid;border-radius:10px;opacity:0;pointer-events:none;background:rgba(255,255,255,.85)}
+.stamp.yes{left:18px;color:#3f8f4e;transform:rotate(-14deg)}
+.stamp.no{right:18px;color:#d42a6c;transform:rotate(14deg)}
+.sw-btns{display:flex;justify-content:center;gap:24px}
+.sw-btns button{width:62px;height:62px;border-radius:50%;border:2px solid var(--line);background:var(--bg);font-size:26px;cursor:pointer;transition:transform .15s}
+.sw-btns button:hover{transform:scale(1.08)}
+.sw-no{color:var(--muted)}
+.sw-yes{color:var(--neon)}
+.likes-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px;font-weight:800;color:var(--muted);padding:0 6px;min-height:40px}
+.minis{display:flex;gap:4px;flex-wrap:wrap}
+.minis span{width:36px;height:36px;border-radius:50%;overflow:hidden;box-shadow:0 0 0 2px var(--neon);display:block}
+.minis svg{display:block;width:100%;height:100%}
+.minis em{font-style:normal;font-weight:600}
+.match{display:flex;flex-direction:column;gap:20px;background:var(--dirty);color:var(--dirty-fg);border-radius:30px;padding:28px clamp(16px,4vw,32px);position:relative;overflow:hidden}
+.match::before{content:"";position:absolute;width:320px;height:320px;border-radius:50%;background:var(--neon);filter:blur(110px);opacity:.35;right:-80px;top:-120px}
+.match-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;position:relative}
+.match-it{font-family:var(--s-font);font-style:italic;font-size:clamp(28px,5vw,44px)}
+.match-word{font-family:var(--d-font);font-weight:800;font-size:clamp(48px,11vw,104px);line-height:.9;color:var(--neon);letter-spacing:-.02em}
+.match-grid{display:grid;grid-template-columns:minmax(0,280px) minmax(0,1fr);gap:28px;align-items:start;position:relative}
+@media (max-width:700px){.match-grid{grid-template-columns:1fr}.m-left{max-width:340px}}
+.m-left{display:flex;flex-direction:column;gap:12px;min-width:0}
+.m-photo{border-radius:22px;height:320px}
+.chat{display:flex;flex-direction:column;gap:6px}
+.chat{background:#221d27;border-radius:20px;padding:12px;gap:10px!important}
+.chat-head{display:flex;gap:10px;align-items:center;padding-bottom:8px;border-bottom:1px solid #3a3340}
+.chat-head b{display:block;font-size:16px}
+.chat-head small{display:block;font-size:12px;color:#9fd8a8;font-weight:700}
+.chat-av{width:38px;height:38px;border-radius:50%;overflow:hidden;flex:none;box-shadow:0 0 0 2px var(--neon)}
+.chat-av svg{display:block;width:100%;height:100%}
+.chat-mode{margin:0;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#8a8194}
+.chat-mode.live{color:var(--neon)}
+.chat-mode.live::before{content:"● ";}
+.chat-log{display:flex;flex-direction:column;gap:6px;height:260px;overflow-y:auto;padding:2px}
+.chat-log .bubble{margin:0;overflow-wrap:anywhere}
+.bubble.typing{display:flex;gap:4px;padding:12px 14px}
+.bubble.typing i{width:7px;height:7px;border-radius:50%;background:#b8aec2;animation:dot 1s infinite}
+.bubble.typing i:nth-child(2){animation-delay:.15s}.bubble.typing i:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+.chat-note{margin:0;font-size:11px;color:#b8aec2;line-height:1.35}
+.admin-fab{position:fixed;right:calc(14px + env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:25;border:0;border-radius:999px;padding:10px 16px;background:var(--dirty);color:var(--dirty-fg);font:inherit;font-weight:800;cursor:pointer;box-shadow:0 0 0 2px var(--neon)}
+.admin{min-height:100vh;background:var(--bg);display:flex;flex-direction:column;padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));gap:14px}
+.adm-head{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.adm-lock{align-self:center;margin-top:10vh;width:100%;max-width:320px;display:flex;flex-direction:column;gap:10px;background:var(--dirty);color:var(--dirty-fg);border-radius:22px;padding:24px}
+.adm-lock b{font-family:var(--d-font);font-size:20px;color:var(--neon)}
+.adm-lock label{font-size:13px;font-weight:800;color:#b8aec2}
+.adm-lock input{font:inherit;font-size:22px;letter-spacing:.3em;text-align:center;padding:10px 14px;border-radius:14px;border:1px solid #3a3340;background:#141117;color:var(--dirty-fg)}
+.adm-lock input[type="email"]{font-size:16px;letter-spacing:0;text-align:left}
+.adm-err{margin:0;font-size:13px;font-weight:700;color:#ff8fb6}
+.adm-head b{font-family:var(--d-font);font-size:22px;color:var(--neon)}
+.adm-head span{color:var(--muted);font-size:14px;flex:1;min-width:0}
+.adm-body{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:16px;flex:1;min-height:0}
+.adm-side{display:flex;flex-direction:column;gap:8px;min-width:0}
+.adm-side h3{margin:0;font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.adm-empty{color:var(--muted);font-size:14px}
+.adm-list{display:flex;flex-direction:column;gap:6px}
+.adm-item{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:14px;padding:8px 10px;cursor:pointer;position:relative;font:inherit}
+.adm-item.on{border-color:var(--neon)}
+.adm-av{width:40px;height:40px;border-radius:50%;overflow:hidden;display:block}
+.adm-av svg{display:block;width:100%;height:100%}
+.adm-txt{display:flex;flex-direction:column;min-width:0}
+.adm-txt b{font-size:14px}
+.adm-txt small{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.adm-time{font-size:11px;color:var(--muted)}
+.adm-dot{position:absolute;right:10px;bottom:10px;width:9px;height:9px;border-radius:50%;background:var(--neon)}
+.adm-chat{display:flex;flex-direction:column;gap:10px;background:var(--dirty);color:var(--dirty-fg);border-radius:22px;padding:14px;min-width:0;min-height:70vh}
+.adm-top{display:flex;flex-direction:column;gap:4px}
+.adm-top small{color:#b8aec2}
+.adm-toggle{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:700;margin-top:4px;cursor:pointer}
+.adm-toggle input{width:18px;height:18px;accent-color:var(--neon)}
+.adm-log{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px;min-height:240px;max-height:60vh;padding:4px}
+.adm-msg{display:flex;flex-direction:column;gap:2px;max-width:85%}
+.adm-msg .bubble{margin:0;overflow-wrap:anywhere}
+.adm-msg small{font-size:11px;color:#8a8194}
+.adm-msg.guest{align-self:flex-end;align-items:flex-end}
+.adm-msg.guest .bubble{background:#3a3340;border-radius:18px 18px 4px 18px}
+.adm-msg.her .bubble{background:#2a2430}
+.adm-msg.mine .bubble{background:var(--neon);color:#fff}
+.adm-form{display:flex;gap:8px}
+.adm-form input{flex:1;min-width:0;font:inherit;padding:10px 14px;border-radius:999px;border:1px solid #3a3340;background:#141117;color:var(--dirty-fg)}
+#admBack{display:none;align-self:flex-start}
+@media (max-width:720px){.adm-body{grid-template-columns:1fr}.admin.has-sel .adm-side{display:none}.admin:not(.has-sel) .adm-chat{display:none}#admBack{display:inline}}
+.chat-tools{display:flex;gap:6px;flex-wrap:wrap}
+.chat-tools button{border:0;background:#2a2430;color:#d9d0e2;border-radius:10px;padding:5px 10px;font-size:12px;font-weight:800;cursor:pointer}
+.chat-tools button:hover{color:var(--neon)}
+.chat-tools button[aria-pressed="true"]{background:var(--neon);color:#fff}
+.chat-ask{margin:0;font-size:13px;font-weight:800;color:#f3d36b;background:#2a2430;border-radius:10px;padding:8px 10px}
+.chat-form.her input{border-color:var(--neon);box-shadow:0 0 0 2px color-mix(in srgb,var(--neon) 35%,transparent)}
+.chat-form.her button{background:#f3d36b;color:#141117}
+.chat-quick{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.chat-quick button{flex:none;border:1px solid #3a3340;background:transparent;color:var(--dirty-fg);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700;cursor:pointer}
+.chat-quick button:hover{border-color:var(--neon);color:var(--neon)}
+.chat-form{display:flex;gap:6px}
+.chat-form input{flex:1;min-width:0;font:inherit;font-size:15px;padding:9px 14px;border-radius:999px;border:1px solid #3a3340;background:#141117;color:var(--dirty-fg)}
+.chat-form button{width:40px;height:40px;flex:none;border-radius:50%;border:0;background:var(--neon);color:#fff;font-size:16px;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.bubble.typing i{animation:none}}
+.chat-from{font-size:12px;font-weight:800;color:#b8aec2;text-transform:uppercase;letter-spacing:.1em}
+.bubble{background:#2a2430;border-radius:18px 18px 18px 4px;padding:10px 14px;align-self:flex-start;max-width:90%;font-size:15px}
+.bubble.me{background:var(--neon);color:#fff;border-radius:18px 18px 4px 18px;align-self:flex-end}
+.match-info{display:flex;flex-direction:column;gap:14px;min-width:0}
+.match-info h3{font-family:var(--d-font);font-weight:800;font-size:clamp(24px,4.4vw,36px);line-height:1.1}
+.match .meter,.match .pq-facts div{background:#221d27;color:var(--dirty-fg)}
+.match .meter .ends,.match .pq-facts span,.match .likes-row{color:#b8aec2}
+.match .meter .pin{background:var(--dirty-fg)}
+.match .pq-facts .green{box-shadow:inset 3px 0 0 #7cc98a}
+.match .pq-facts .red{box-shadow:inset 3px 0 0 var(--neon)}
+.m-why{margin:4px 0 0;padding-left:18px;font-size:15px;display:flex;flex-direction:column;gap:4px}
+.m-tip{border-left:3px solid var(--neon);padding-left:12px;font-size:15px;color:#d9d0e2}
+.match .btn.ghost{color:var(--dirty-fg);box-shadow:inset 0 0 0 2px #3a3340}
+@media (prefers-reduced-motion:reduce){.swcard{transition:none}}
+
+/* sort game */
+.sortgame{display:flex;flex-direction:column;gap:16px;align-items:center;background:var(--card);border-radius:26px;padding:24px 16px;max-width:640px;width:100%}
+.sortcard{min-height:120px;width:100%;max-width:420px;display:flex;align-items:center;justify-content:center;text-align:center;font-family:var(--d-font);font-weight:800;font-size:clamp(22px,4.6vw,32px);line-height:1.15;border-radius:20px;border:2px dashed var(--line);padding:16px;transition:transform .15s,background .2s}
+.sortcard.ok{background:color-mix(in srgb,var(--sage) 25%,transparent)}
+.sortcard.no{background:color-mix(in srgb,var(--neon) 25%,transparent);transform:translateX(6px)}
+.sortbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;max-width:420px}
+.sortbtns button{border:0;border-radius:18px;padding:16px 10px;font-weight:800;cursor:pointer;font-size:17px}
+.sortbtns .s{background:var(--serious);color:var(--serious-fg);font-family:var(--s-font);font-style:italic;font-size:20px}
+.sortbtns .d{background:var(--dirty);color:var(--dirty-fg);font-family:var(--d-font)}
+.sortbtns button:disabled{opacity:.4;cursor:default}
+
+/* reaction game */
+.react{width:100%;max-width:340px;aspect-ratio:9/12;border-radius:30px;border:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:20px;background:var(--serious);color:var(--serious-fg);transition:background .08s;box-shadow:0 0 0 8px var(--line);user-select:none;touch-action:manipulation}
+.react .big{font-family:var(--s-font);font-style:italic;font-weight:700;font-size:34px;line-height:1.1}
+.react.go{background:var(--dirty);color:var(--dirty-fg)}
+.react.go .big{font-family:var(--d-font);font-style:normal;color:var(--neon);font-size:44px}
+.react.early{background:var(--neon);color:#fff}
+.reactwrap{display:grid;grid-template-columns:auto minmax(0,1fr);gap:28px;align-items:center}
+@media (max-width:640px){.reactwrap{grid-template-columns:1fr;justify-items:center}}
+.rounds{display:flex;gap:6px;flex-wrap:wrap}
+.rounds span{min-width:64px;text-align:center;padding:4px 8px;border-radius:10px;background:var(--card);font-weight:800;font-variant-numeric:tabular-nums;font-size:14px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.split,.meter .pin,.toast{transition:none}.flash.go,.figure.spin svg{animation:none}}
+</style>
+<script src="firebase-config.js"></script>
+<script>
+// Gives the page the same small db/user API it uses on claude.ai, backed by Firebase.
+(function(){
+  var done;var ready=new Promise(function(r){done=r});window.__fbReady=done;
+  window.claude={use:function(n){return ready.then(function(fb){if(!fb)return null;return n==='db'?fb.db:n==='user'?fb.user:null})}};
+  window.__fb={login:function(e,p){return ready.then(function(fb){return fb?fb.login(e,p):false})},logout:function(){return ready.then(function(fb){return fb&&fb.logout()})}};
+  if(!window.FIREBASE_CONFIG||!window.FIREBASE_CONFIG.apiKey||window.FIREBASE_CONFIG.apiKey.indexOf('ВСТАВЬ')===0){done(null);window.__fb=undefined}
+})();
+</script>
+<script type="module">
+if(window.__fb){
+  const V='10.12.2',B='https://www.gstatic.com/firebasejs/'+V+'/';
+  try{
+    const {initializeApp}=await import(B+'firebase-app.js');
+    const A=await import(B+'firebase-auth.js');
+    const F=await import(B+'firebase-firestore.js');
+    const app=initializeApp(window.FIREBASE_CONFIG);
+    const auth=A.getAuth(app),fs=F.getFirestore(app);
+    await new Promise(r=>{const u=A.onAuthStateChanged(auth,()=>{u();r()})});
+    if(!auth.currentUser)await A.signInAnonymously(auth);
+    const wrap=s=>({id:s.id,exists:s.exists(),data:()=>s.data(),metadata:{fromCache:s.metadata.fromCache,hasPendingWrites:s.metadata.hasPendingWrites}});
+    const docRef=path=>{const r=F.doc(fs,path);return{id:r.id,path,
+      get:async()=>wrap(await F.getDoc(r)),set:d=>F.setDoc(r,d),update:d=>F.updateDoc(r,d),delete:()=>F.deleteDoc(r),
+      onSnapshot:(n,e)=>F.onSnapshot(r,s=>n(wrap(s)),err=>e&&e({code:'unavailable',message:String(err)})),
+      collection:c=>collRef(path+'/'+c)}};
+    const collRef=(path,cons=[])=>({path,
+      orderBy:(f,dir)=>collRef(path,[...cons,F.orderBy(f,dir||'asc')]),
+      limit:n=>collRef(path,[...cons,F.limit(n)]),
+      where:(f,op,v)=>collRef(path,[...cons,F.where(f,op,v)]),
+      doc:id=>docRef(path+'/'+id),
+      get:async()=>{const q=await F.getDocs(F.query(F.collection(fs,path),...cons));return{docs:q.docs.map(wrap),size:q.size,empty:q.empty,docChanges:()=>[],metadata:{fromCache:false,hasPendingWrites:false}}},
+      onSnapshot:(n,e)=>F.onSnapshot(F.query(F.collection(fs,path),...cons),q=>n({docs:q.docs.map(wrap),size:q.size,empty:q.empty,docChanges:()=>[],metadata:{fromCache:q.metadata.fromCache,hasPendingWrites:q.metadata.hasPendingWrites}}),err=>e&&e({code:'unavailable',message:String(err)}))});
+    const user={isOwner:async()=>!!auth.currentUser&&auth.currentUser.uid===window.ADMIN_UID,id:async()=>auth.currentUser?auth.currentUser.uid:null,can:async()=>true,canEdit:async()=>false};
+    window.__fbReady({db:{doc:docRef,collection:p=>collRef(p)},user,
+      login:async(e,p)=>{const c=await A.signInWithEmailAndPassword(auth,e,p);return c.user.uid===window.ADMIN_UID},
+      logout:async()=>{await A.signOut(auth);await A.signInAnonymously(auth)}});
+  }catch(err){console.error('Firebase не запустился',err);window.__fbReady(null)}
+}
+</script>
+</head>
+<body>
+
+<nav class="top" aria-label="Разделы">
+  <ul>
+    <li><a href="#trend">Тренд</a></li>
+    <li><a href="#obraz">Собери образ</a></li>
+    <li><a href="#para">Кто тебе пара</a></li>
+    <li><a href="#sort">Сортировка</a></li>
+    <li><a href="#shchelk">Поймай переход</a></li>
+    <li><a href="#bingo">Бинго</a></li>
+    <li><a href="#podpis">Подписи</a></li>
+    <li><a href="#komenty">Комменты</a></li>
+  </ul>
+</nav>
+
+<div class="wrap">
+  <section class="hero" aria-label="Грязнулька против серьёзки">
+    <span class="eyebrow">Тренд из TikTok · разбор с юмором</span>
+    <div class="split" id="split">
+      <div class="half d">
+        <div class="glow"></div>
+        <span class="vs">VS</span>
+        <h1 class="word">грязнуль<span>ка</span></h1>
+        <ul><li>чёрное худи</li><li>энергетик</li><li>тусовки</li><li>флирт</li><li>ничего серьёзного</li></ul>
+      </div>
+      <div class="half s">
+        <span class="vs">VS</span>
+        <p class="word">серьёзка</p>
+        <ul><li>свитер</li><li>книжка</li><li>чай с мёдом</li><li>верность</li><li>серьёзные отношения</li></ul>
+      </div>
+    </div>
+    <div class="vibe">
+      <label for="vibe">Вайб-переключатель на сегодня</label>
+      <input type="range" id="vibe" min="0" max="100" value="50">
+      <div class="ends"><span>серьёзка</span><output id="vibeOut" for="vibe">ровно посередине</output><span>грязнулька</span></div>
+    </div>
+    <p class="lead">В TikTok разгорелся тренд про два образа: «грязнулька» в чёрном с энергетиком и «серьёзка» в свитере с книжкой. Здесь можно собрать свой образ, сыграть в бинго по трендовым видео, придумать подпись к ролику и почитать комменты.</p>
+  </section>
+
+  <section id="trend" aria-labelledby="t-h">
+    <span class="eyebrow">Что за тренд</span>
+    <h2 id="t-h">Две эстетики, один <em>мем</em></h2>
+    <div class="two">
+      <div class="card d">
+        <h3>грязнулька</h3>
+        <ul>
+          <li>всё чёрное: худи, карго, массивные ботинки</li>
+          <li>энергетик всегда в кадре</li>
+          <li>подводка стрелками и цепочки</li>
+          <li>видео снято ночью при свете гирлянды</li>
+          <li>любит флирт, тусовки и новые знакомства</li>
+          <li>в отношениях: «ничего серьёзного», свобода и никаких обещаний</li>
+        </ul>
+      </div>
+      <div class="card s">
+        <h3>серьёзка</h3>
+        <ul>
+          <li>бежевый свитер, юбка в клетку, хвостик</li>
+          <li>чай в кружке с сердечком</li>
+          <li>книжка, конспекты, ранний подъём</li>
+          <li>видео снято утром у окна</li>
+          <li>ищет серьёзные отношения, а не «просто пообщаться»</li>
+          <li>в отношениях: верность, планы на будущее и знакомство с друзьями</li>
+        </ul>
+      </div>
+    </div>
+    <p>Главный смысл тренда — в отношении к отношениям. Серьёзка ищет одного человека и что-то настоящее. Грязнулька наслаждается свободой, флиртом и тусовками и не торопится ни к чему серьёзному. Внешний образ (чёрное худи против свитера) — просто мемная упаковка этих двух подходов.</p>
+    <p class="note">Это мем про стиль и вайб видео. Одежда и любимый напиток ничего не говорят о человеке, поэтому подписывать так реальных девушек в комментах — уже не шутка, а травля.</p>
+  </section>
+
+  <section id="obraz" aria-labelledby="o-h">
+    <span class="eyebrow">Конструктор</span>
+    <h2 id="o-h">Собери образ</h2>
+    <div class="dress">
+      <div class="figure" id="figure">
+        <svg id="fig" viewBox="0 0 240 400" role="img" aria-label="Нарисованная девушка в выбранном образе"></svg>
+        <div class="flash" id="flash"></div>
+      </div>
+      <div class="controls" id="controls">
+        <div class="meter">
+          <div class="ends"><span>серьёзка</span><span>грязнулька</span></div>
+          <div class="bar"><b class="pin" id="pin"></b></div>
+          <p id="vibeText" aria-live="polite"></p>
+        </div>
+        <div class="row">
+          <button class="btn neon" type="button" id="trans">Сделать переход</button>
+          <button class="btn ghost" type="button" id="rand">Случайный образ</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="para" aria-labelledby="p-h">
+    <span class="eyebrow">Приложение знакомств «Вайб»</span>
+    <h2 id="p-h">Кто тебе пара: <em>серьёзка</em> или грязнулька?</h2>
+    <p>Главная разница в тренде не в худи и энергетиках, а в том, кто что ищет. Серьёзка хочет настоящих отношений, верности и планов на будущее. Грязнулька любит флирт, тусовки и новые знакомства и не спешит ни к чему серьёзному. Листай анкеты и свайпай: в конце узнаешь, кто тебе подходит.</p>
+
+    <div class="app" id="swipe">
+      <div class="app-bar"><b>вайб</b><span id="swNum">1 / 36</span></div>
+      <div class="deck" id="deck"><div class="swcard" id="swCard" tabindex="0" aria-live="polite"></div></div>
+      <div class="sw-btns">
+        <button type="button" class="sw-no" id="swNo" aria-label="Не нравится">✕</button>
+        <button type="button" class="sw-yes" id="swYes" aria-label="Нравится">♥</button>
+      </div>
+      <div class="likes-row"><span>Твои лайки:</span><div id="likesRow" class="minis"></div></div>
+    </div>
+
+    <div class="match" id="match" hidden>
+      <div class="match-head"><span class="match-it">it’s a</span><span class="match-word">MATCH</span></div>
+      <div class="match-grid">
+        <div class="m-left">
+          <div class="m-photo"><svg id="mfig" viewBox="0 0 240 300" preserveAspectRatio="xMidYMin slice" role="img" aria-label="Фото твоей пары"></svg><div class="pf-name"><b id="mName"></b><span id="mSeek"></span></div></div>
+          <div class="chat" id="mChat">
+            <div class="chat-head"><span class="chat-av" id="cAv"></span><div><b id="mFrom"></b><small id="cStatus">онлайн</small></div></div>
+            <p class="chat-note" id="cNote" hidden>Переписка сохраняется: автор сайта может её читать и иногда отвечать за героиню.</p>
+            <p class="chat-mode" id="cMode">офлайн-режим · заготовленные ответы</p>
+            <div class="chat-log" id="cLog" aria-live="polite"></div>
+            <p class="chat-ask" id="cAsk" hidden></p>
+            <div class="chat-tools"><button type="button" id="cRegen">↻ другой ответ</button><button type="button" id="cHer" aria-pressed="false">✍ ответить за неё</button></div>
+            <div class="chat-quick" id="cQuick"></div>
+            <form class="chat-form" id="cForm"><input id="cInput" type="text" maxlength="200" autocomplete="off" placeholder="Напиши сообщение…" aria-label="Сообщение"><button type="submit" aria-label="Отправить">➤</button></form>
+          </div>
+        </div>
+        <div class="match-info">
+          <span class="eyebrow">Тебе подходит</span>
+          <h3 id="mTitle"></h3>
+          <p id="mDesc"></p>
+          <div class="meter">
+            <div class="ends"><span>серьёзка <b id="mS">0</b></span><span><b id="mD">0</b> грязнулька</span></div>
+            <div class="bar"><b class="pin" id="ppin"></b></div>
+          </div>
+          <div class="pq-facts">
+            <div><span>Почему вы совпали</span><ul class="m-why" id="mWhy"></ul></div>
+            <div><span>Идеальное свидание</span><p id="mDate"></p></div>
+            <div class="green"><span>Зелёный флаг</span><p id="mGreen"></p></div>
+            <div class="red"><span>Красный флаг (шутка)</span><p id="mRed"></p></div>
+          </div>
+          <p class="m-tip" id="mTip"></p>
+          <div class="likes-row"><span>Все твои мэтчи:</span><div id="mMinis" class="minis"></div></div>
+          <div class="row">
+            <button class="btn neon" type="button" id="pqAgain">Листать заново</button>
+            <button class="btn ghost" type="button" id="pqToBuilder">Переодеть в конструкторе</button>
+            <button class="btn ghost" type="button" id="pqCopy">Скопировать результат</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sort" aria-labelledby="s-h">
+    <span class="eyebrow">Игра · 30 секунд</span>
+    <h2 id="s-h">Сортировка вайба</h2>
+    <p>На экране появляется вещь или занятие. Быстро реши, к какой эстетике оно относится. Можно нажимать кнопки или стрелки ← и →. Пять правильных подряд дают бонус.</p>
+    <div class="sortgame">
+      <div class="stats"><div><b id="sScore">0</b><span>Очки</span></div><div><b id="sTime">30</b><span>Секунды</span></div><div><b id="sStreak">0</b><span>Серия</span></div><div><b id="sBest">0</b><span>Рекорд</span></div></div>
+      <div class="sortcard" id="sCard" aria-live="polite">Нажми «Начать»</div>
+      <div class="sortbtns">
+        <button type="button" class="s" id="sS" disabled>← серьёзка</button>
+        <button type="button" class="d" id="sD" disabled>грязнулька →</button>
+      </div>
+      <button class="btn neon" type="button" id="sStart">Начать</button>
+    </div>
+  </section>
+
+  <section id="shchelk" aria-labelledby="r-h">
+    <span class="eyebrow">Игра · реакция</span>
+    <h2 id="r-h">Поймай переход</h2>
+    <div class="reactwrap">
+      <button type="button" class="react" id="react" aria-live="polite">
+        <span class="big" id="rBig">серьёзка</span>
+        <span id="rSmall">Нажми, чтобы начать</span>
+      </button>
+      <div class="controls">
+        <p>В трендовых видео серьёзка щёлкает пальцами и превращается в грязнульку. Жди щелчка и нажимай как можно быстрее. Пять попыток, считаем среднее время.</p>
+        <div class="rounds" id="rRounds"></div>
+        <div class="stats"><div><b id="rAvg">—</b><span>Среднее</span></div><div><b id="rBest">—</b><span>Рекорд</span></div></div>
+        <p id="rVerdict" style="font-weight:800"></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="bingo" aria-labelledby="b-h">
+    <span class="eyebrow">Игра · бинго</span>
+    <h2 id="b-h">Бинго трендовых видео</h2>
+    <p>Листай TikTok и отмечай, что увидел в роликах этого тренда. Собери пять в ряд по горизонтали, вертикали или диагонали.</p>
+    <div class="bingo" id="board"></div>
+    <div class="row">
+      <div class="stats"><div><b id="marked">1/25</b><span>Отмечено</span></div><div><b id="lines">0</b><span>Бинго</span></div></div>
+      <button class="btn ghost" type="button" id="newCard">Новая карточка</button>
+    </div>
+  </section>
+
+  <section id="podpis" aria-labelledby="c-h">
+    <span class="eyebrow">Генератор</span>
+    <h2 id="c-h">Генератор подписи к видео</h2>
+    <div class="capwrap">
+      <div class="phone">
+        <div class="glow"></div>
+        <div class="side"><span><i></i>12,4K</span><span><i></i>847</span><span><i></i>2,1K</span></div>
+        <span class="user">@vibe.check</span>
+        <p class="cap" id="cap" aria-live="polite"></p>
+        <span class="tags" id="tags"></span>
+      </div>
+      <div class="controls">
+        <p>Нажимай, пока не найдёшь подпись, которая подходит к твоему ролику. Потом скопируй её.</p>
+        <div class="chips" id="capMode" role="group" aria-label="Тема подписи">
+          <button type="button" data-m="all" aria-pressed="true">Любая</button>
+          <button type="button" data-m="s" aria-pressed="false">Серьёзка</button>
+          <button type="button" data-m="d" aria-pressed="false">Грязнулька</button>
+        </div>
+        <div class="row">
+          <button class="btn neon" type="button" id="gen">Новая подпись</button>
+          <button class="btn ghost" type="button" id="copy">Скопировать</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="komenty" aria-labelledby="k-h">
+    <span class="eyebrow">Лента</span>
+    <h2 id="k-h">Комменты под трендом</h2>
+    <p>Самые типичные комментарии под такими видео. Лайкай любимые или оставь свой: он появится только у тебя на экране.</p>
+    <div class="comments" id="comments"></div>
+    <form class="cmtform" id="cmtForm">
+      <input id="cmtInput" type="text" maxlength="120" placeholder="Например: а если я пью чай из банки от энергетика?" aria-label="Твой комментарий">
+      <button class="btn" type="submit">Отправить</button>
+    </form>
+  </section>
+
+  <footer>
+    <span>Шуточный сайт про тренд из TikTok.</span>
+    <span>Образы — это стиль, а не характеристика человека.</span>
+  </footer>
+</div>
+<section class="admin" id="admin" hidden aria-label="Админка">
+  <header class="adm-head"><b>вайб · админка</b><span>отвечай за героинь в живых переписках</span><button type="button" class="btn ghost" id="admLogout">Выйти</button><button type="button" class="btn ghost" id="admExit">На сайт</button></header>
+  <form class="adm-lock" id="admLock" hidden>
+    <b>Вход в админку</b>
+    <input id="admEmail" type="email" autocomplete="username" placeholder="почта" aria-label="Почта" hidden>
+    <label for="admPass">Пароль</label>
+    <input id="admPass" type="password" inputmode="numeric" autocomplete="current-password" placeholder="••••">
+    <p class="adm-err" id="admErr" hidden>Неверный пароль. Попробуй ещё раз.</p>
+    <button class="btn neon" type="submit">Войти</button>
+  </form>
+  <div class="adm-body" id="admBody" hidden>
+    <aside class="adm-side"><h3>Переписки</h3><p class="adm-empty" id="admEmpty">Загружаю переписки…</p><div id="admList" class="adm-list"></div></aside>
+    <div class="adm-chat" id="admChat" hidden>
+      <div class="adm-top"><button type="button" class="linkbtn" id="admBack">← Все чаты</button><b id="admWho"></b><small id="admSeek"></small>
+        <label class="adm-toggle"><input type="checkbox" id="admManual"> Отвечаю только я (ИИ и заготовки молчат)</label></div>
+      <div class="adm-log" id="admLog"></div>
+      <form class="adm-form" id="admForm"><input id="admInput" type="text" maxlength="600" autocomplete="off" placeholder="Ответ от лица героини…" aria-label="Ответ от лица героини"><button class="btn neon" type="submit">Отправить</button></form>
+    </div>
+  </div>
+</section>
+<button type="button" class="admin-fab" id="adminBtn" hidden>Админка</button>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}},
+               set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+  let tt;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2400)}
+
+  /* ---------- hero vibe slider ---------- */
+  const vibeTexts=[[10,'плед, чай и конспекты'],[30,'серьёзка, но с цепочкой'],[45,'почти посередине'],[56,'ровно посередине'],[70,'днём лекции, вечером концерт'],[90,'чёрное худи и энергетик'],[101,'главная героиня ночного TikTok']];
+  function vibe(){
+    const v=+$('vibe').value;
+    $('split').style.setProperty('--l',(0.35+v/100*1.3)+'fr');
+    $('split').style.setProperty('--r',(0.35+(100-v)/100*1.3)+'fr');
+    $('vibeOut').textContent=vibeTexts.find(x=>v<x[0])[1];
+    store.set('vibe',v);
+  }
+  $('vibe').value=store.get('vibe',50);$('vibe').addEventListener('input',vibe);vibe();
+
+  /* ---------- dress-up ---------- */
+  const SKIN='#f2cfb3',INK='#1c1820';
+  const CATS=[
+    ['bg','Фон',[
+      ['library','Библиотека',-2,()=>`<rect width="240" height="400" fill="#efe3c8"/>${[0,1,2].map(r=>`<rect x="0" y="${30+r*70}" width="240" height="6" fill="#b08a5a"/>`+[...Array(9)].map((_,i)=>`<rect x="${8+i*26}" y="${r*70-4}" width="${14+(i%3)*4}" height="34" fill="${['#8c5a3c','#5f7f5c','#c49a52','#7d6a9a'][(i+r)%4]}"/>`).join('')).join('')}`],
+      ['cafe','Кофейня',-1,()=>`<rect width="240" height="400" fill="#dfe8d8"/><rect x="30" y="30" width="180" height="140" rx="8" fill="#f8f4ea" stroke="#9bb193" stroke-width="6"/><line x1="120" y1="30" x2="120" y2="170" stroke="#9bb193" stroke-width="6"/><circle cx="196" cy="56" r="16" fill="#f3d36b"/>`],
+      ['street','Ночная улица',1,()=>`<rect width="240" height="400" fill="#3b3f52"/><rect x="0" y="0" width="70" height="260" fill="#2a2d3b"/><rect x="170" y="20" width="70" height="240" fill="#2a2d3b"/>${[...Array(10)].map((_,i)=>`<rect x="${10+(i%2)*30}" y="${20+Math.floor(i/2)*44}" width="16" height="22" fill="${i%3?'#f3d36b':'#3b3f52'}" opacity=".8"/>`).join('')}<circle cx="120" cy="50" r="16" fill="#f4eef8" opacity=".8"/>`],
+      ['park','Парк',-1,()=>`<rect width="240" height="400" fill="#cfe3c4"/><rect y="270" width="240" height="130" fill="#9cc48a"/>${[[30,150],[205,130],[120,96]].map(([x,y])=>`<rect x="${x-5}" y="${y}" width="10" height="${290-y}" fill="#7a5a3a"/><circle cx="${x}" cy="${y}" r="34" fill="#6f9e5a"/>`).join('')}<circle cx="196" cy="40" r="16" fill="#f3d36b"/>`],
+      ['roof','Ночная крыша',1,()=>`<rect width="240" height="400" fill="#1f2340"/>${[[30,40],[70,80],[120,24],[160,90],[214,120],[50,150],[100,120],[200,30]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2" fill="#fff"/>`).join('')}<circle cx="190" cy="60" r="14" fill="#f4eef8"/><rect x="0" y="240" width="60" height="60" fill="#151726"/><rect x="176" y="220" width="64" height="80" fill="#151726"/><rect y="290" width="240" height="110" fill="#2b2d3a"/>`],
+      ['party','Тусовка',2,()=>`<rect width="240" height="400" fill="#141117"/>${[[40,60,'#e6337f'],[190,90,'#7a5cff'],[120,30,'#22c3e6'],[200,200,'#e6337f'],[30,200,'#7a5cff']].map(([x,y,c])=>`<circle cx="${x}" cy="${y}" r="34" fill="${c}" opacity=".35"/>`).join('')}<path d="M0 20 Q60 50 120 20 T240 20" stroke="#f3d36b" stroke-width="2" fill="none"/>${[20,60,100,140,180,220].map((x,i)=>`<circle cx="${x}" cy="${i%2?32:26}" r="4" fill="#f3d36b"/>`).join('')}`]]],
+    ['hair','Волосы',[
+      ['pony','Гладкий хвост',-2],['braids','Косички',-1],['bun','Небрежный пучок',0],['curly','Кудри',0],['bob','Каре',1],['loose','Распущенные',2]]],
+    ['top','Верх',[
+      ['sweater','Бежевый свитер',-2],['cardigan','Кардиган',-1],['shirt','Белая рубашка',-1],['sport','Олимпийка',0],['bomber','Бомбер',1],['leather','Кожанка',1],['hoodie','Чёрное худи',2]]],
+    ['bottom','Низ',[
+      ['skirt','Юбка в клетку',-2],['jeans','Джинсы',0],['cargo','Чёрные карго',2]]],
+    ['acc','Аксессуар',[
+      ['glasses','Очки',-2],['bow','Бантик',-2],['none','Ничего',0],['piercing','Пирсинг',2],['headphones','Наушники',1],['chains','Цепочки',2]]],
+    ['hand','В руке',[
+      ['book','Книжка',-2],['flowers','Букет',-2],['tea','Чай',-1],['camera','Фотоаппарат',0],['phone','Телефон',1],['energy','Энергетик',2]]]
+  ];
+  const SER={bg:'library',hair:'pony',top:'sweater',bottom:'skirt',acc:'glasses',hand:'tea'};
+  const DIR={bg:'party',hair:'loose',top:'hoodie',bottom:'cargo',acc:'chains',hand:'energy'};
+  function opt(c,id){return CATS.find(x=>x[0]===c)[2].find(o=>o[0]===id)}
+  let look=Object.assign({},SER,store.get('look',{}));
+  CATS.forEach(([c])=>{if(!opt(c,look[c]))look[c]=SER[c]});
+
+  // detailed face: eye shape/colour, brows, nose, lips, freckles, mole, liner, earrings
+  function face(L,SKIN){
+    const dark=['loose','bun'].includes(L.hair)&&(L.top==='hoodie'||L.top==='leather');
+    const EYES={round:[5.6,0],almond:[4.4,1],sleepy:[3.2,0],cat:[4.2,2.6]};
+    const [h,tilt]=EYES[L.eye||'round']||EYES.round;
+    const ec=L.ec||'#5b3a24',lip=L.lip||(dark?'#8a2a4a':'#c9606b'),liner=L.liner??dark,browC=L.browc||'#3a2a22';
+    let s=`<ellipse cx="84" cy="100" rx="5" ry="8" fill="${SKIN}"/><ellipse cx="156" cy="100" rx="5" ry="8" fill="${SKIN}"/>`;
+    s+=`<ellipse cx="120" cy="96" rx="36" ry="40" fill="${SKIN}"/>`;
+    s+=`<ellipse cx="120" cy="128" rx="22" ry="6" fill="#000" opacity=".04"/>`;
+    [[-1,106],[1,134]].forEach(([m,cx])=>{
+      const cy=98,ix=cx-6*m,ox=cx+6*m,oy=cy-tilt,icy=cy+(L.eye==='sleepy'?.8:0);
+      s+=`<path d="M${ix} ${cy} Q${cx} ${cy-h-1} ${ox} ${oy} Q${cx} ${cy+h} ${ix} ${cy}Z" fill="#fff"/>`;
+      s+=`<circle cx="${cx}" cy="${icy}" r="${Math.min(3.5,h)}" fill="${ec}"/><circle cx="${cx}" cy="${icy}" r="1.6" fill="${INK}"/><circle cx="${cx+1.2}" cy="${icy-1.4}" r="1" fill="#fff"/>`;
+      s+=`<path d="M${ix} ${cy} Q${cx} ${cy-h-1} ${ox} ${oy}" stroke="${INK}" stroke-width="${L.eye==='sleepy'?2.6:1.8}" fill="none" stroke-linecap="round"/>`;
+      if(liner)s+=`<path d="M${ox} ${oy} L${ox+4*m} ${oy-3}" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>`;
+      else s+=`<path d="M${cx+3*m} ${cy-h} l${1.5*m} -2.2 M${ox-.5*m} ${oy-1} l${2.2*m} -1.6" stroke="${INK}" stroke-width="1.1" stroke-linecap="round"/>`;
+      const B={soft:`M${cx-6*m} 87 Q${cx} 83.5 ${cx+6*m} 87`,straight:`M${cx-7*m} 86 L${cx+7*m} 85.5`,arched:`M${cx-6*m} 88 Q${cx+1*m} 80.5 ${cx+7*m} 87`,thick:`M${cx-7*m} 87 Q${cx} 83 ${cx+7*m} 86`}[L.brow||'soft'];
+      s+=`<path d="${B}" stroke="${browC}" stroke-width="${L.brow==='thick'?4:L.brow==='straight'?2.8:2.2}" fill="none" stroke-linecap="round"/>`;
+    });
+    s+=`<path d="M119 100 Q116 108 119 111 Q121 112 124 110" stroke="#000" stroke-opacity=".22" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+    s+=`<ellipse cx="100" cy="112" rx="7" ry="4.5" fill="${L.blush||'#f19a8a'}" opacity=".45"/><ellipse cx="140" cy="112" rx="7" ry="4.5" fill="${L.blush||'#f19a8a'}" opacity=".45"/>`;
+    if(L.fr)s+=[[98,106],[102,109],[96,111],[104,104],[136,106],[140,109],[144,105],[138,111],[118,104],[122,105]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1" fill="#9a5a34" opacity=".6"/>`).join('');
+    if(L.mole)s+=`<circle cx="133" cy="117" r="1.4" fill="${INK}"/>`;
+    const mouth=L.mouth||(dark?'smirk':'smile');
+    if(mouth==='smile')s+=`<path d="M111 117 Q115.5 114 120 116 Q124.5 114 129 117 Q120 125 111 117Z" fill="${lip}"/><path d="M111 117 Q120 121 129 117" stroke="#000" stroke-opacity=".25" stroke-width="1" fill="none"/>`;
+    if(mouth==='open')s+=`<path d="M110 116 Q120 113 130 116 Q127 127 120 127 Q113 127 110 116Z" fill="#5a1f2a"/><path d="M112 116.5 Q120 115 128 116.5 L127 119 Q120 118 113 119Z" fill="#fff"/><path d="M110 116 Q115 113 120 115 Q125 113 130 116" stroke="${lip}" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M113 125 Q120 128 127 125" stroke="${lip}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+    if(mouth==='smirk')s+=`<path d="M112 119 Q117 116 121 117.5 Q125 115.5 129 115 Q124 122 112 119Z" fill="${lip}"/><path d="M112 119 Q121 120 129 115" stroke="#000" stroke-opacity=".25" stroke-width="1" fill="none"/>`;
+    if(mouth==='neutral')s+=`<path d="M112 118 Q116 115.5 120 117 Q124 115.5 128 118 Q120 122 112 118Z" fill="${lip}"/><line x1="112" y1="118" x2="128" y2="118" stroke="#000" stroke-opacity=".25" stroke-width="1"/>`;
+    return s;
+  }
+  function earrings(L){
+    if(L.ear==='hoops')return `<circle cx="84" cy="113" r="5.5" fill="none" stroke="#e8b82a" stroke-width="2"/><circle cx="156" cy="113" r="5.5" fill="none" stroke="#e8b82a" stroke-width="2"/>`;
+    if(L.ear==='studs')return `<circle cx="84" cy="108" r="2.2" fill="#f4eef8" stroke="#c9c9d2"/><circle cx="156" cy="108" r="2.2" fill="#f4eef8" stroke="#c9c9d2"/>`;
+    return '';
+  }
+  function figSVG(L){
+    const SKIN=L.skin||'#f2cfb3',HC=L.hc;
+    let s='';
+    s+=opt('bg',L.bg)[3]();
+    s+=`<ellipse cx="120" cy="386" rx="80" ry="8" fill="#000" opacity=".18"/>`;
+    if(L.hair==='loose')s+=`<path d="M74 70 Q70 40 120 40 Q170 40 166 70 L174 210 Q120 226 66 210Z" fill="${HC||INK}"/>`;
+    if(L.hair==='pony')s+=`<path d="M150 78 Q186 96 176 160 Q170 182 160 190 Q166 150 148 110Z" fill="${HC||'#6b4226'}"/>`;
+    if(L.hair==='bob')s+=`<path d="M76 72 Q74 38 120 38 Q166 38 164 72 L166 134 Q120 142 74 134Z" fill="${HC||'#2a1a12'}"/>`;
+    if(L.hair==='braids')s+=`${[0,1,2,3,4].map(i=>`<circle cx="84" cy="${124+i*15}" r="9" fill="${HC||'#6b4226'}"/><circle cx="156" cy="${124+i*15}" r="9" fill="${HC||'#6b4226'}"/>`).join('')}<circle cx="84" cy="200" r="5" fill="#e6337f"/><circle cx="156" cy="200" r="5" fill="#e6337f"/>`;
+    if(L.hair==='curly')s+=`${[[80,64],[98,46],[120,40],[142,46],[160,64],[170,88],[70,88],[68,114],[172,114],[74,138],[166,138]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="20" fill="${HC||'#2a1a12'}"/>`).join('')}`;
+    if(L.top==='hoodie')s+=`<path d="M70 150 Q64 70 120 62 Q176 70 170 150Z" fill="#232028"/>`;
+    const shoes={skirt:'#6b4226',jeans:'#f4f1f6',cargo:'#0f0d12'}[L.bottom];
+    if(L.bottom==='skirt'){
+      s+=`<rect x="92" y="300" width="18" height="66" fill="${SKIN}"/><rect x="130" y="300" width="18" height="66" fill="${SKIN}"/>`;
+      s+=`<rect x="88" y="300" width="26" height="30" fill="#d9d3c4"/><rect x="126" y="300" width="26" height="30" fill="#d9d3c4"/>`;
+      s+=`<path d="M64 246 L176 246 L190 306 L50 306Z" fill="#8c5a3c"/><path d="M80 246 L70 306 M110 246 L108 306 M140 246 L144 306 M168 246 L176 306 M56 276 L184 276" stroke="#c49a52" stroke-width="3"/>`;
+      s+=`<rect x="86" y="362" width="30" height="14" rx="6" fill="${shoes}"/><rect x="124" y="362" width="30" height="14" rx="6" fill="${shoes}"/>`;
+    } else if(L.bottom==='jeans'){
+      s+=`<path d="M70 246 L170 246 L166 366 L124 366 L120 290 L116 366 L74 366Z" fill="#4a6fa5"/><path d="M120 252 L120 290" stroke="#35507a" stroke-width="3"/>`;
+      s+=`<rect x="70" y="360" width="48" height="18" rx="8" fill="${shoes}" stroke="#c9c2cf" stroke-width="2"/><rect x="122" y="360" width="48" height="18" rx="8" fill="${shoes}" stroke="#c9c2cf" stroke-width="2"/>`;
+    } else {
+      s+=`<path d="M64 246 L176 246 L178 362 L124 362 L120 292 L116 362 L62 362Z" fill="#1a171d"/><rect x="66" y="296" width="22" height="26" rx="3" fill="#2a2630"/><rect x="152" y="296" width="22" height="26" rx="3" fill="#2a2630"/>`;
+      s+=`<rect x="60" y="356" width="58" height="26" rx="8" fill="${shoes}"/><rect x="122" y="356" width="58" height="26" rx="8" fill="${shoes}"/><rect x="60" y="374" width="58" height="8" fill="#3a3540"/><rect x="122" y="374" width="58" height="8" fill="#3a3540"/>`;
+    }
+    const sleeve={sweater:'#e2cfa8',shirt:'#fbfbfb',leather:'#1f1b22',hoodie:'#232028',cardigan:'#e9a7b8',sport:'#2f4a8a',bomber:'#5f6b45'}[L.top];
+    s+=`<rect x="50" y="150" width="22" height="96" rx="11" fill="${sleeve}"/><rect x="168" y="150" width="22" height="96" rx="11" fill="${sleeve}"/>`;
+    s+=`<circle cx="61" cy="250" r="10" fill="${SKIN}"/>`;
+    s+=`<rect x="110" y="124" width="20" height="22" fill="${SKIN}"/>`;
+    if(L.top==='cardigan')s+=`<path d="M66 152 Q120 134 174 152 L176 256 L64 256Z" fill="#e9a7b8"/><path d="M106 140 L120 256 L134 140Z" fill="#fbfbfb"/>${[170,192,214,236].map(y=>`<circle cx="110" cy="${y}" r="3" fill="#fbfbfb"/>`).join('')}`;
+    if(L.top==='sport')s+=`<path d="M66 152 Q120 134 174 152 L176 256 L64 256Z" fill="#2f4a8a"/><path d="M72 160 L72 256 M168 160 L168 256" stroke="#fbfbfb" stroke-width="5"/><path d="M106 138 L120 150 L134 138" stroke="#fbfbfb" stroke-width="4" fill="none"/><line x1="120" y1="150" x2="120" y2="256" stroke="#c9c9d2" stroke-width="2"/>`;
+    if(L.top==='bomber')s+=`<path d="M66 152 Q120 134 174 152 L176 256 L64 256Z" fill="#5f6b45"/><rect x="64" y="244" width="112" height="12" fill="#e07a2e"/><path d="M106 140 Q120 150 134 140" stroke="#e07a2e" stroke-width="6" fill="none"/><line x1="120" y1="150" x2="120" y2="244" stroke="#3f4a2e" stroke-width="3"/>`;
+    if(L.top==='sweater')s+=`<path d="M66 152 Q120 132 174 152 L176 256 L64 256Z" fill="#e2cfa8"/>${[80,96,112,128,144,160].map(x=>`<line x1="${x}" y1="236" x2="${x}" y2="256" stroke="#cbb68c" stroke-width="3"/>`).join('')}<path d="M104 140 Q120 152 136 140" stroke="#cbb68c" stroke-width="6" fill="none"/>`;
+    if(L.top==='shirt')s+=`<path d="M66 152 Q120 136 174 152 L176 256 L64 256Z" fill="#fbfbfb" stroke="#ddd6e2" stroke-width="2"/><path d="M104 138 L120 160 L136 138 L130 134 L120 148 L110 134Z" fill="#f0edf3" stroke="#ddd6e2" stroke-width="2"/><line x1="120" y1="160" x2="120" y2="256" stroke="#ddd6e2" stroke-width="2"/>`;
+    if(L.top==='leather')s+=`<path d="M66 152 Q120 134 174 152 L176 256 L64 256Z" fill="#1f1b22"/><path d="M104 138 L120 256 L136 138" fill="#16131a" stroke="#3a3540" stroke-width="2"/><path d="M98 138 L112 180 L90 160Z M142 138 L128 180 L150 160Z" fill="#2c2731"/><line x1="124" y1="170" x2="124" y2="250" stroke="#9a94a0" stroke-width="2" stroke-dasharray="3 3"/>`;
+    if(L.top==='hoodie')s+=`<path d="M66 152 Q120 136 174 152 L176 256 L64 256Z" fill="#232028"/><rect x="88" y="206" width="64" height="34" rx="10" fill="#1a171d"/><line x1="112" y1="142" x2="110" y2="180" stroke="#f4eef8" stroke-width="3"/><line x1="128" y1="142" x2="130" y2="180" stroke="#f4eef8" stroke-width="3"/>`;
+    s+=face(L,SKIN);
+    if(L.hair==='pony')s+=`<path d="M84 92 Q84 52 120 52 Q156 52 156 92 Q146 66 120 66 Q94 66 84 92Z" fill="${HC||'#6b4226'}"/><circle cx="152" cy="80" r="6" fill="#c49a52"/>`;
+    if(L.hair==='loose')s+=`<path d="M82 100 Q80 50 120 50 Q160 50 158 100 Q150 70 132 66 Q120 80 96 76 Q86 84 82 100Z" fill="${HC||INK}"/>`;
+    if(L.hair==='bun')s+=`<circle cx="120" cy="46" r="20" fill="${HC||'#3a2a22'}"/><path d="M106 36 Q112 26 118 34 M128 32 Q138 30 134 42" stroke="${HC||'#3a2a22'}" stroke-width="4" fill="none"/><path d="M84 94 Q84 54 120 54 Q156 54 156 94 Q150 70 126 68 Q100 70 84 94Z" fill="${HC||'#3a2a22'}"/><path d="M86 96 Q80 116 88 128 M154 96 Q160 116 152 128" stroke="${HC||'#3a2a22'}" stroke-width="4" fill="none"/>`;
+    if(L.hair==='bob')s+=`<path d="M82 88 Q82 52 120 52 Q158 52 158 88 L158 90 Q120 80 82 90Z" fill="${HC||'#2a1a12'}"/>`;
+    if(L.hair==='braids')s+=`<path d="M84 94 Q84 52 120 52 Q156 52 156 94 Q140 66 120 66 Q100 66 84 94Z" fill="${HC||'#6b4226'}"/><line x1="120" y1="53" x2="120" y2="66" stroke="#000" stroke-opacity=".2" stroke-width="2"/>`;
+    if(L.hair==='curly')s+=`${[[90,62],[106,54],[122,52],[138,56],[152,66]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="11" fill="${HC||'#2a1a12'}"/>`).join('')}`;
+    s+=earrings(L);
+    s+=`<path d="M100 62 Q112 55 126 57" stroke="#fff" stroke-opacity=".22" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+    if(L.acc==='bow')s+=`<path d="M140 56 L158 46 L158 68Z M140 56 L122 46 L122 68Z" fill="#e6337f"/><circle cx="140" cy="57" r="5" fill="#c42a6a"/>`;
+    if(L.acc==='piercing')s+=`<circle cx="124" cy="111" r="3.5" fill="none" stroke="#c9c9d2" stroke-width="2"/><circle cx="86" cy="104" r="3" fill="#c9c9d2"/><circle cx="86" cy="112" r="2.5" fill="#c9c9d2"/><circle cx="154" cy="104" r="3" fill="#c9c9d2"/><circle cx="141" cy="86" r="2.5" fill="#c9c9d2"/>`;
+    if(L.acc==='glasses')s+=`<circle cx="106" cy="98" r="11" fill="none" stroke="${INK}" stroke-width="3"/><circle cx="134" cy="98" r="11" fill="none" stroke="${INK}" stroke-width="3"/><line x1="117" y1="98" x2="123" y2="98" stroke="${INK}" stroke-width="3"/>`;
+    if(L.acc==='chains')s+=`<path d="M104 140 Q120 166 136 140" stroke="#c9c9d2" stroke-width="3" fill="none"/><path d="M100 140 Q120 180 140 140" stroke="#c9c9d2" stroke-width="2.5" fill="none" stroke-dasharray="4 2"/><circle cx="120" cy="172" r="5" fill="#c9c9d2"/>`;
+    if(L.acc==='headphones')s+=`<path d="M82 100 Q82 46 120 46 Q158 46 158 100" stroke="#e6337f" stroke-width="7" fill="none"/><rect x="74" y="90" width="16" height="26" rx="7" fill="#e6337f"/><rect x="150" y="90" width="16" height="26" rx="7" fill="#e6337f"/>`;
+    if(L.hand==='camera')s+=`<rect x="160" y="230" width="38" height="26" rx="4" fill="${INK}"/><circle cx="179" cy="243" r="8" fill="#5a5a66" stroke="#c9c9d2" stroke-width="2"/><rect x="164" y="225" width="10" height="6" fill="${INK}"/>`;
+    if(L.hand==='flowers')s+=`<path d="M179 252 L172 214 M179 252 L180 210 M179 252 L190 216" stroke="#5f7f5c" stroke-width="3"/><circle cx="172" cy="212" r="7" fill="#e6337f"/><circle cx="181" cy="207" r="7" fill="#f3d36b"/><circle cx="191" cy="214" r="7" fill="#e9a7b8"/><path d="M168 238 L190 238 L184 256 L174 256Z" fill="#efe3c8"/>`;
+    if(L.hand==='book')s+=`<rect x="160" y="222" width="38" height="48" rx="3" fill="#5f7f5c" transform="rotate(-8 179 246)"/><rect x="166" y="228" width="26" height="6" fill="#efe3c8" transform="rotate(-8 179 246)"/>`;
+    if(L.hand==='tea')s+=`<rect x="166" y="226" width="28" height="32" rx="5" fill="#fbfbfb" stroke="#e2cfa8" stroke-width="2"/><path d="M194 232 Q206 240 194 250" stroke="#e2cfa8" stroke-width="4" fill="none"/><path d="M180 248 C170 240 172 232 180 237 C188 232 190 240 180 248Z" fill="#e6337f" opacity=".75"/><path d="M174 220 Q170 210 176 202 M186 220 Q182 210 188 202" stroke="#9a94a0" stroke-width="2" fill="none" opacity=".7"/>`;
+    if(L.hand==='phone')s+=`<rect x="168" y="218" width="24" height="42" rx="5" fill="${INK}"/><rect x="171" y="222" width="18" height="32" rx="2" fill="#7a5cff"/>`;
+    if(L.hand==='energy')s+=`<rect x="167" y="212" width="24" height="50" rx="4" fill="#16131a" stroke="#c9c9d2" stroke-width="2"/><path d="M174 224 L184 236 L176 236 L186 250" stroke="#e6337f" stroke-width="3" fill="none"/><rect x="170" y="208" width="18" height="6" rx="2" fill="#c9c9d2"/>`;
+    s+=`<circle cx="179" cy="250" r="9" fill="${SKIN}"/>`;
+    return s;
+  }
+  function vibePct(L){let sum=0,min=0,max=0;CATS.forEach(([c,,os])=>{sum+=opt(c,L[c])[2];min+=Math.min(...os.map(o=>o[2]));max+=Math.max(...os.map(o=>o[2]))});return {sum,min,max}}
+  function draw(){
+    const L=look;$('fig').innerHTML=figSVG(L);
+
+    let sum=0,min=0,max=0;CATS.forEach(([c,,os])=>{sum+=opt(c,L[c])[2];min+=Math.min(...os.map(o=>o[2]));max+=Math.max(...os.map(o=>o[2]))});
+    const pct=Math.round((sum-min)/(max-min)*100);
+    $('pin').style.left=pct+'%';
+    $('vibeText').textContent=pct<15?'Эталонная серьёзка: хоть сейчас в библиотеку':pct<35?'Серьёзка, но с характером':pct<50?'Мягкий микс: книжка в рюкзаке, концерт в планах':pct<65?'Баланс: днём пары, вечером гирлянды':pct<85?'Вайб грязнульки: чёрное, цепочки, ночная съёмка':'Чистая грязнулька-эстетика из тренда';
+    $('controls').querySelectorAll('.chips button').forEach(b=>b.setAttribute('aria-pressed',look[b.dataset.c]===b.dataset.v));
+    store.set('look',look);
+  }
+  const ctr=$('controls'),rowEl=ctr.querySelector('.row');
+  CATS.forEach(([c,name,os])=>{
+    const d=document.createElement('div');d.className='cat';
+    d.innerHTML=`<b>${name}</b><div class="chips" role="group" aria-label="${name}">${os.map(o=>`<button type="button" id="ch-${c}-${o[0]}" data-c="${c}" data-v="${o[0]}">${o[1]}</button>`).join('')}</div>`;
+    ctr.insertBefore(d,rowEl);
+  });
+  ctr.addEventListener('click',e=>{const b=e.target.closest('.chips button');if(!b)return;look[b.dataset.c]=b.dataset.v;draw()});
+  function transition(to){
+    const f=$('figure');f.classList.remove('spin');$('flash').classList.remove('go');void f.offsetWidth;
+    f.classList.add('spin');$('flash').classList.add('go');
+    setTimeout(()=>{look=Object.assign({},to);draw()},250);
+  }
+  $('trans').addEventListener('click',()=>{const isSer=look.top===SER.top&&look.bg===SER.bg;transition(isSer?DIR:SER);toast(isSer?'Щёлк, и ты уже на тусовке':'Щёлк, и ты уже в библиотеке')});
+  $('rand').addEventListener('click',()=>{const r={};CATS.forEach(([c,,os])=>r[c]=os[Math.floor(Math.random()*os.length)][0]);transition(r)});
+  draw();
+
+  /* ---------- bingo ---------- */
+  const TILES=['Чёрное худи','Энергетик в кадре','Переход по щелчку','Подпись «POV: я серьёзка»','Коммент «а я тогда кто?»','Подводка стрелками','Свитер и книжка','Тот самый звук','Две подруги в разных образах','Камера снизу','Кружка с сердечком','Цепочки и кольца','«Днём серьёзка, вечером в чёрном»','Дуэт с реакцией','Коммент «это я»','Гирлянда на фоне','Плед в клетку','Селфи в зеркале','Тренд повторила мама','Переоделась за секунду','«Где купить кофту?»','Кот в кадре','Слоумо с волосами','«Часть 2 в профиле»'];
+  let card=store.get('bingo-card',null),marks=store.get('bingo-marks',[]),prevLines=0;
+  function newCard(){card=[...TILES].sort(()=>Math.random()-.5);marks=[];prevLines=0;store.set('bingo-card',card);store.set('bingo-marks',marks);renderBingo()}
+  const LINES=[];for(let i=0;i<5;i++){LINES.push([0,1,2,3,4].map(j=>i*5+j));LINES.push([0,1,2,3,4].map(j=>j*5+i))}
+  LINES.push([0,6,12,18,24],[4,8,12,16,20]);
+  function cells(){const c=card.slice();c.splice(12,0,'FREE');return c}
+  function renderBingo(){
+    const cs=cells();
+    $('board').innerHTML=cs.map((t,i)=>i===12?`<button type="button" class="free" id="bg-12" aria-pressed="true" disabled>В ТРЕНДЕ</button>`:`<button type="button" id="bg-${i}" data-i="${i}" aria-pressed="${marks.includes(i)}">${t}</button>`).join('');
+    checkBingo(true);
+  }
+  function checkBingo(silent){
+    const on=new Set([...marks,12]);let n=0;const win=new Set();
+    LINES.forEach(l=>{if(l.every(i=>on.has(i))){n++;l.forEach(i=>win.add(i))}});
+    [...$('board').children].forEach((b,i)=>b.classList.toggle('win',win.has(i)));
+    $('marked').textContent=on.size+'/25';$('lines').textContent=n;
+    if(!silent&&n>prevLines)toast(n===12?'Полная карточка! Ты знаешь тренд наизусть':'БИНГО! Линий: '+n);
+    prevLines=n;
+  }
+  $('board').addEventListener('click',e=>{const b=e.target.closest('button[data-i]');if(!b)return;const i=+b.dataset.i;
+    marks=marks.includes(i)?marks.filter(x=>x!==i):[...marks,i];b.setAttribute('aria-pressed',marks.includes(i));store.set('bingo-marks',marks);checkBingo(false)});
+  $('newCard').addEventListener('click',newCard);
+  if(!Array.isArray(card)||card.length!==TILES.length)newCard();else renderBingo();
+
+  /* ---------- caption generator ---------- */
+  const CAP={
+    s:['POV: ты серьёзка, а подруга зовёт на концерт в будний день','Мой вечер пятницы: чай, плед и сериал. И я счастлива','Серьёзка проснулась в 7 утра без будильника. Это не шутка','POV: поставила книжку в кадр, а читаю её уже третий месяц','Мама: «вот бы все были как ты». Я в бежевом свитере:'],
+    d:['POV: надела чёрное худи и сразу стала главной героиней','Энергетик в одной руке, конспект в другой — сессия по-взрослому','Когда гирлянда — единственный свет в комнате, но вайб на 100','POV: собираешься на концерт 40 минут и всё равно надеваешь всё чёрное','Подводка ровная с первого раза. Сегодня мой день'],
+    mix:['Днём серьёзка, вечером в чёрном. Кто так же?','Купила и бежевый свитер, и чёрное худи. Я не определилась','Серьёзка или грязнулька? А я просто хотела показать новую кофту','Угадайте по образу, куда я собралась','Переход в конце, досмотри']};
+  const TAGS={s:'#серьёзка #вайб #рекомендации',d:'#грязнулька #тренд #рекомендации',mix:'#грязнулька #серьёзка #тренд #fyp'};
+  let mode='all',lastCap='';
+  function gen(){
+    const pool=mode==='all'?['s','d','mix']:[mode];const k=pool[Math.floor(Math.random()*pool.length)];
+    let c;do{c=CAP[k][Math.floor(Math.random()*CAP[k].length)]}while(c===lastCap);lastCap=c;
+    $('cap').textContent=c;$('tags').textContent=TAGS[k];
+  }
+  $('gen').addEventListener('click',gen);
+  $('capMode').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;mode=b.dataset.m;
+    $('capMode').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));gen()});
+  $('copy').addEventListener('click',()=>{
+    const text=$('cap').textContent+' '+$('tags').textContent;
+    const fallback=()=>{const r=document.createRange();r.selectNodeContents($('cap'));const s=getSelection();s.removeAllRanges();s.addRange(r);toast('Текст выделен, скопируй его вручную')};
+    try{navigator.clipboard.writeText(text).then(()=>toast('Подпись скопирована'),fallback)}catch(e){fallback()}
+  });
+  gen();
+
+  /* ---------- comments ---------- */
+  const BASE=[
+    ['katya.vibes','#e6337f','а если я в чёрном худи, но пью чай с ромашкой?',3120],
+    ['sonya_reads','#5f7f5c','серьёзка по утрам, грязнулька после второй пары',2480],
+    ['dasha.k','#7a5cff','я просто замёрзла и надела что было, а меня записали в тренд',1904],
+    ['mila_lime','#c49a52','где купить этот свитер?? срочно',1220],
+    ['lera.night','#22c3e6','кот на фоне главный герой этого видео',988],
+    ['nastya_m','#e6337f','ну это же просто одежда, все свои',764]];
+  let mine=store.get('my-comments',[]),liked=store.get('liked',[]);
+  if(!Array.isArray(mine))mine=[];if(!Array.isArray(liked))liked=[];
+  function renderComments(){
+    const all=[...mine.map((t,i)=>['ты','var(--fg)',t,0,'m'+i]),...BASE.map((c,i)=>[...c,'b'+i])];
+    $('comments').innerHTML=all.map(([u,col,t,n,id])=>{const on=liked.includes(id);return `<div class="cmt"><span class="av" style="background:${col}"></span><div><b>@${u}</b><p></p></div><button type="button" class="like" id="lk-${id}" data-id="${id}" aria-pressed="${on}" aria-label="Нравится">♥<span>${(n+(on?1:0)).toLocaleString('ru-RU')}</span></button></div>`}).join('');
+    [...$('comments').querySelectorAll('.cmt p')].forEach((p,i)=>p.textContent=all[i][2]);
+  }
+  $('comments').addEventListener('click',e=>{const b=e.target.closest('.like');if(!b)return;const id=b.dataset.id;
+    liked=liked.includes(id)?liked.filter(x=>x!==id):[...liked,id];store.set('liked',liked);renderComments()});
+  $('cmtForm').addEventListener('submit',e=>{e.preventDefault();const v=$('cmtInput').value.trim();if(!v)return;
+    mine=[v,...mine].slice(0,5);liked=liked.filter(x=>!x.startsWith('m'));store.set('liked',liked);store.set('my-comments',mine);$('cmtInput').value='';renderComments();toast('Коммент добавлен')});
+  renderComments();
+
+  /* ---------- swipe pair quiz: dating app ---------- */
+  const NEUTRAL={bg:'cafe',hair:'bun',top:'shirt',bottom:'jeans',acc:'none',hand:'phone'};
+  const PROFILES=[
+    {n:'Соня',a:21,km:2,zod:'♍ дева',h:165,job:'филфак',side:'s',look:{bg:'library',hair:'pony',top:'sweater',bottom:'skirt',acc:'glasses',hand:'tea'},seek:'серьёзные отношения',
+     bio:'ищу одного и навсегда. на «привет как дела» не отвечаю, придумай что-то поинтереснее. если у тебя пять переписок параллельно — мимо',tags:['книги','чай','кино','верность'],
+     pq:'красный флаг для меня',pa:'«я не готов к отношениям» на третьем свидании',msg:'привет. сразу: ты тут за серьёзным или просто полистать?'},
+    {n:'Кира',a:21,km:4,zod:'♐ стрелец',h:170,job:'бариста',side:'d',look:{bg:'party',hair:'loose',top:'hoodie',bottom:'cargo',acc:'chains',hand:'energy'},seek:'ничего серьёзного',
+     bio:'серьёзного не жди, верности не обещаю, но скучно не будет 🖤 пишу когда хочу, пропадаю когда хочу',tags:['концерты','ночь','свобода','флирт'],
+     pq:'где меня найти в пятницу',pa:'там, где громче всего музыка 🔊',msg:'привет. сегодня концерт, нужен +1, идёшь?'},
+    {n:'Алина',a:22,km:1,zod:'♋ рак',h:170,job:'бухгалтер',side:'s',look:{bg:'cafe',hair:'pony',top:'shirt',bottom:'jeans',acc:'glasses',hand:'tea'},seek:'отношения → семья',
+     bio:'хочу замуж и не стесняюсь это писать. нужен взрослый человек с работой и планами. мальчики «я в поиске себя» — листайте',tags:['семья','путешествия','готовка','планы'],
+     pq:'через 5 лет я вижу',pa:'дом, собаку и тебя (если не облажаешься)',msg:'привет 🙂 давай честно: сколько у тебя было серьёзных отношений?'},
+    {n:'Ева',a:22,km:3,zod:'♌ лев',h:175,job:'визажист',side:'d',look:{bg:'party',hair:'loose',top:'leather',bottom:'cargo',acc:'chains',hand:'phone'},seek:'флирт и новые знакомства',
+     bio:'флиртую со всеми, ревнивым мимо 💅 переписываюсь с десятью, встречаюсь с одним. может быть',tags:['тусовки','танцы','тату','флирт'],
+     pq:'как меня зацепить',pa:'удиви. скучных отправляю в архив',msg:'хей) ты всегда такой серьёзный на фото или это фильтр?'},
+    {n:'Вера',a:20,km:5,zod:'♑ козерог',h:162,job:'медколледж',side:'s',look:{bg:'library',hair:'pony',top:'sweater',bottom:'skirt',acc:'none',hand:'book'},seek:'серьёзные отношения',
+     bio:'не пью, не курю, по клубам не хожу. ищу такого же. фото с кальяном в профиле = сразу нет',tags:['учёба','спорт','собаки','без вредных привычек'],
+     pq:'я сразу пойму, что ты не тот, если',pa:'ты отвечаешь раз в сутки одним словом «ок»',msg:'Привет! Ты куришь? Это важно'},
+    {n:'Мира',a:20,km:6,zod:'♒ водолей',h:164,job:'бросила универ',side:'d',look:{bg:'street',hair:'loose',top:'hoodie',bottom:'cargo',acc:'headphones',hand:'energy'},seek:'посмотрим, как пойдёт',
+     bio:'отвечаю раз в три дня. будущее? какое будущее, сегодня пятница ⚡ гоустинг — не баг, а фича',tags:['скейт','рэп','ночные прогулки','спонтанность'],
+     pq:'мой минус',pa:'могу пропасть на неделю и вернуться с мемом',msg:'спишь? погнали гулять'},
+    {n:'Ника',a:23,km:2,zod:'♎ весы',h:168,job:'маркетолог',side:'s',look:{bg:'cafe',hair:'bun',top:'sweater',bottom:'jeans',acc:'headphones',hand:'tea'},seek:'отношения, но без спешки',
+     bio:'серьёзка с юмором. ревнивая, предупреждаю сразу. люблю, когда звонят, а не шлют кружочки в 2 ночи',tags:['стендап','настолки','кофе','честность'],
+     pq:'зелёный флаг для меня',pa:'сам показываешь телефон, и тебе нечего скрывать',msg:'привет! звонок или переписка? я за звонок'},
+    {n:'Даша',a:23,km:8,zod:'♊ близнецы',h:171,job:'ивент-менеджер',side:'d',look:{bg:'party',hair:'bun',top:'leather',bottom:'jeans',acc:'chains',hand:'energy'},seek:'весело провести время',
+     bio:'много друзей, много знакомых, много бывших 🙃 ничего серьёзного, но всё по-честному',tags:['вечеринки','фестивали','автостоп','свобода'],
+     pq:'свидание мечты',pa:'спонтанно уехать в другой город на одну ночь и успеть к первой паре',msg:'привет! паспорт с собой? шучу. или нет'},
+    {n:'Лиза',a:21,km:3,zod:'♉ телец',h:160,job:'учусь на юриста',side:'s',look:{bg:'library',hair:'pony',top:'shirt',bottom:'skirt',acc:'glasses',hand:'book'},seek:'серьёзные отношения',
+     bio:'верность — база. с бывшими не дружу и тебе не советую. ниже 175 не пишите, без обид',tags:['театр','кошки','право','верность'],
+     pq:'не пиши мне, если',pa:'у тебя в подписках одни модели',msg:'Привет. С бывшей общаешься?'},
+    {n:'Яна',a:21,km:7,zod:'♏ скорпион',h:167,job:'модель (иногда)',side:'d',look:{bg:'street',hair:'loose',top:'hoodie',bottom:'jeans',acc:'chains',hand:'phone'},seek:'без обязательств',
+     bio:'не люблю слово «мы», долгие переписки и вопрос «кто мы друг другу». сегодня тут, завтра там 🖤',tags:['музыка','клубы','фото','без обязательств'],
+     pq:'я тебе не подойду, если',pa:'ты уже хочешь познакомить меня с мамой',msg:'привет. без долгих переписок: встречаемся или как?'},
+    {n:'Полина',a:22,km:2,zod:'♏ скорпион',h:166,job:'почти психолог',side:'s',look:{bg:'cafe',hair:'bun',top:'shirt',bottom:'skirt',acc:'none',hand:'book'},seek:'серьёзные отношения',
+     bio:'проработала все травмы, теперь ищу того, с кем не придётся прорабатывать новые. эмоционально недоступным — сразу нет',tags:['психология','йога','кофе','доверие'],
+     pq:'я влюблюсь, если',pa:'ты сам предложишь познакомить меня с друзьями',msg:'привет. какой у тебя тип привязанности? шучу. или нет'},
+    {n:'Влада',a:22,km:5,zod:'♈ овен',h:169,job:'диджей',side:'d',look:{bg:'party',hair:'loose',top:'leather',bottom:'cargo',acc:'headphones',hand:'energy'},seek:'тусовки и новые знакомства',
+     bio:'телефон на 1%, планы меняются каждые полчаса. отношения не умею, вечеринки умею 🎧',tags:['клубы','диджеинг','ночь','флирт'],
+     pq:'где меня найти в субботу',pa:'везде понемногу и до самого утра',msg:'хей, у меня +1 на вечеринку, ты как?'},
+    {n:'Катя',a:24,km:3,zod:'♑ козерог',h:172,job:'аналитик в банке',side:'s',look:{bg:'library',hair:'pony',top:'sweater',bottom:'jeans',acc:'glasses',hand:'book'},seek:'семья в будущем',
+     bio:'работаю, бегаю по утрам, коплю на квартиру. «посмотрим, как пойдёт» — не мой формат. ищу взрослого, а не мальчика',tags:['карьера','бег','инвестиции','уют'],
+     pq:'мой идеальный вечер',pa:'ужин дома, одна серия и спать в 23:00',msg:'Привет. Какие у тебя планы на ближайший год? Я серьёзно'},
+    {n:'Алиса',a:20,km:4,zod:'♐ стрелец',h:160,job:'учусь на тату-мастера',side:'d',look:{bg:'street',hair:'bun',top:'hoodie',bottom:'cargo',acc:'chains',hand:'energy'},seek:'ничего серьёзного',
+     bio:'отношения? пока нет. приключения? всегда да. «доброе утро» не пишу, я сплю до двух',tags:['граффити','скейт','рок','свобода'],
+     pq:'мой минус',pa:'забываю отвечать, а потом пишу пять сообщений подряд',msg:'йоу. умеешь на скейте? научу'},
+    {n:'Маша',a:20,km:1,zod:'♓ рыбы',h:158,job:'кондитер',side:'s',look:{bg:'cafe',hair:'pony',top:'sweater',bottom:'skirt',acc:'headphones',hand:'tea'},seek:'серьёзные отношения',
+     bio:'пеку, вяжу, пишу длинные сообщения и жду таких же. «ок» и «норм» в ответ = конец переписки',tags:['выпечка','вязание','сериалы','забота'],
+     pq:'зелёный флаг для меня',pa:'ты пишешь «доброе утро» первым. каждый день',msg:'Привет! А ты сладкое любишь? Это проверка'},
+    {n:'Карина',a:24,km:6,zod:'♌ лев',h:173,job:'SMM',side:'d',look:{bg:'party',hair:'loose',top:'shirt',bottom:'jeans',acc:'chains',hand:'phone'},seek:'лёгкий флирт',
+     bio:'люблю внимание, комплименты и красивые свидания ✨ платит тот, кто позвал. дальше как пойдёт',tags:['мода','рестораны','флирт','сторис'],
+     pq:'свидание мечты',pa:'крыша, закат и чтобы красиво получилось в сторис',msg:'привет) начни с комплимента, а там посмотрим'},
+    {n:'Аня',a:23,km:2,zod:'♈ овен',h:169,job:'фотограф',side:'s',look:{bg:'cafe',hair:'bun',top:'shirt',bottom:'jeans',acc:'glasses',hand:'phone'},seek:'долгие отношения',
+     bio:'серьёзка, но не зануда. без «подруг на всякий случай». если ты сидишь в трёх приложениях сразу, я это пойму',tags:['походы','фото','настолки','честность'],
+     pq:'как меня зацепить',pa:'позови не «куда-нибудь», а в конкретное место и время',msg:'привет! горы или море? отвечай быстро'},
+    {n:'Тая',a:21,km:7,zod:'♒ водолей',h:165,job:'бармен',side:'d',look:{bg:'street',hair:'loose',top:'leather',bottom:'jeans',acc:'headphones',hand:'phone'},seek:'общение, а там посмотрим',
+     bio:'много переписываюсь, мало обещаю. знакомлюсь легко, привязываюсь сложно. ревнуешь к лайкам — свайп влево',tags:['путешествия','музыка','ночные смены','спонтанность'],
+     pq:'я тебе не подойду, если',pa:'ты проверяешь, когда я была в сети',msg:'привет. сразу скажу: слово «встречаемся» не люблю'},
+    {n:'Ксюша',a:21,km:3,zod:'♊ близнецы',h:163,job:'дизайнер',side:'s',look:{bg:'library',hair:'pony',top:'shirt',bottom:'skirt',acc:'headphones',hand:'tea'},seek:'серьёзные отношения',
+     bio:'мне не нужны сто мэтчей, нужен один, который не пропадёт через неделю. игнор больше суток = блок',tags:['рисование','кино','кошки','верность'],
+     pq:'красный флаг для меня',pa:'«мы просто дружим» с бывшей каждый вечер',msg:'Привет :) Что смотришь сейчас? Только не говори, что ничего'},
+    {n:'Рита',a:23,km:4,zod:'♋ рак',h:168,job:'промоутер',side:'d',look:{bg:'party',hair:'bun',top:'hoodie',bottom:'cargo',acc:'chains',hand:'energy'},seek:'весёлая компания и флирт',
+     bio:'душа любой тусовки 🎤 знаю всех диджеев района. верность? звучит как название скучной группы',tags:['караоке','вечеринки','друзья','свобода'],
+     pq:'моя суперсила',pa:'знакомлюсь с кем угодно за пять минут',msg:'привет! караоке сегодня, споём дуэтом?'},
+    {n:'Ульяна',a:24,km:3,zod:'♍ дева',h:167,job:'врач-ординатор',side:'s',look:{bg:'park',hair:'braids',hc:'#e8c46a',top:'cardigan',bottom:'skirt',acc:'bow',hand:'flowers'},seek:'серьёзные отношения',
+     bio:'работаю сутками, поэтому на игры нет времени. ищу того, кто встретит после смены с ужином, а не с претензиями',tags:['медицина','сон','собаки','надёжность'],
+     pq:'не пиши мне, если',pa:'ты обижаешься, что я не ответила во время смены',msg:'привет. у меня 20 минут перерыва, удиви'},
+    {n:'Злата',a:22,km:5,zod:'♏ скорпион',h:166,job:'тату-модель',side:'d',look:{bg:'roof',hair:'bob',hc:'#e86aa5',top:'bomber',bottom:'cargo',acc:'piercing',hand:'energy'},seek:'ничего серьёзного',
+     bio:'розовые волосы, чёрное сердце 🖤 в отношения не играю, в долгие переписки тоже',tags:['тату','панк','ночь','свобода'],
+     pq:'мой минус',pa:'влюбляюсь на один вечер и остываю к утру',msg:'хей. какая у тебя тату? нет ни одной? исправим'},
+    {n:'Зарина',a:22,km:2,zod:'♎ весы',h:161,job:'джуниор-разработчица',side:'s',look:{bg:'cafe',hair:'curly',hc:'#2a1a12',skin:'#c68c5e',top:'sport',bottom:'jeans',acc:'glasses',hand:'book'},seek:'серьёзные отношения, без спешки',
+     bio:'пишу код и не терплю баги в отношениях. одна вкладка — один человек. параллельные процессы не поддерживаю',tags:['код','аниме','кофе','честность'],
+     pq:'мой тест на совместимость',pa:'табы или пробелы. подумай хорошо',msg:'привет! табы или пробелы? от ответа зависит многое'},
+    {n:'Вика',a:23,km:9,zod:'♊ близнецы',h:174,job:'промо на рейвах',side:'d',look:{bg:'party',hair:'curly',hc:'#4a7fd6',skin:'#8d5a3b',top:'sport',bottom:'cargo',acc:'headphones',hand:'energy'},seek:'рейвы и новые знакомства',
+     bio:'суббота начинается в пятницу. на рейвах меня знают все, а по-настоящему никто 🎧',tags:['рейв','техно','фестивали','флирт'],
+     pq:'где меня найти',pa:'у самой колонки в 4 утра',msg:'техно или хаус? от ответа зависит, пойдём ли мы в субботу'},
+    {n:'Оля',a:25,km:1,zod:'♉ телец',h:163,job:'учительница',side:'s',look:{bg:'library',hair:'bob',hc:'#c0502e',skin:'#f7dcc6',top:'cardigan',bottom:'skirt',acc:'glasses',hand:'tea'},seek:'семья и дети',
+     bio:'проверяю тетради, умею терпеть и всё прощаю. кроме вранья. детей хочу, и это не обсуждается',tags:['дети','книги','дача','верность'],
+     pq:'через 5 лет я вижу',pa:'свою дачу, двоих детей и мужа, который чинит забор',msg:'Здравствуйте! Ой, привет. Профессиональная привычка 🙂'},
+    {n:'Ася',a:20,km:12,zod:'♒ водолей',h:159,job:'стримерша',side:'d',look:{bg:'street',hair:'braids',hc:'#d9d9e0',skin:'#f7dcc6',top:'hoodie',bottom:'jeans',acc:'headphones',hand:'phone'},seek:'флирт, ничего серьёзного',
+     bio:'стримлю ночью, сплю днём. на свидания хожу, отношения — не мой жанр 🎮',tags:['игры','стримы','ночь','флирт'],
+     pq:'я тебе не подойду, если',pa:'ты ревнуешь к чату на стриме',msg:'го катку? а там посмотрим'},
+    {n:'Таня',a:21,km:4,zod:'♈ овен',h:178,job:'волейболистка',side:'s',look:{bg:'park',hair:'pony',hc:'#e8c46a',skin:'#e0ac85',top:'sport',bottom:'jeans',acc:'none',hand:'phone'},seek:'серьёзные отношения',
+     bio:'тренировки шесть дней в неделю, по тусовкам не хожу. ищу того, кто придёт на мою игру и не будет ныть, что рано вставать',tags:['волейбол','зож','режим','поддержка'],
+     pq:'зелёный флаг для меня',pa:'ты встаёшь со мной на пробежку в 6 утра',msg:'привет! бегаешь? если нет, научу'},
+    {n:'Милана',a:24,km:6,zod:'♌ лев',h:172,job:'блогер, 50к',side:'d',look:{bg:'roof',hair:'loose',hc:'#e8c46a',skin:'#e0ac85',top:'leather',bottom:'skirt',acc:'chains',hand:'camera'},seek:'лёгкий флирт и красивые свидания',
+     bio:'50 тысяч подписчиков и ни одного серьёзного парня. меня всё устраивает ✨',tags:['блог','путешествия','мода','флирт'],
+     pq:'свидание мечты',pa:'там, где хороший свет для фото',msg:'привет) фотографировать умеешь? это собеседование'},
+    {n:'Даяна',a:23,km:3,zod:'♑ козерог',h:166,job:'нейл-мастер',side:'s',look:{bg:'cafe',hair:'loose',hc:'#2a1a12',skin:'#c68c5e',top:'shirt',bottom:'skirt',acc:'bow',hand:'phone'},seek:'отношения, где меня ценят',
+     bio:'не скромница, но и не тусовщица. знаю себе цену. цветы без повода обязательны, «я забыл» не принимается',tags:['маникюр','рестораны','сериалы','внимание'],
+     pq:'красный флаг для меня',pa:'не поздравил с днём рождения первым',msg:'привет 💅 а ты помнишь дни рождения?'},
+    {n:'Лина',a:21,km:15,zod:'♐ стрелец',h:170,job:'мотокурьер',side:'d',look:{bg:'street',hair:'loose',hc:'#c0502e',skin:'#c68c5e',top:'leather',bottom:'cargo',acc:'chains',hand:'phone'},seek:'свобода и драйв',
+     bio:'мотоцикл, кожанка и никаких «ты где?». прокачу, но не жди, что останусь',tags:['мото','скорость','рок','свобода'],
+     pq:'мой минус',pa:'уезжаю, когда становится скучно. буквально',msg:'шлем есть? нет? дам свой'},
+    {n:'Женя',a:22,km:2,zod:'♋ рак',h:164,job:'волонтёр в приюте',side:'s',look:{bg:'park',hair:'braids',top:'cardigan',bottom:'jeans',acc:'none',hand:'camera'},seek:'серьёзные отношения',
+     bio:'по выходным в приюте, в будни учусь. у меня два кота и третий на передержке. если не любишь животных, даже не начинай',tags:['животные','волонтёрство','природа','доброта'],
+     pq:'я влюблюсь, если',pa:'ты сам предложишь забрать собаку из приюта на выходные',msg:'привет! кошки или собаки? неправильного ответа нет. почти'},
+    {n:'Диана',a:22,km:7,zod:'♓ рыбы',h:168,job:'танцовщица',side:'d',look:{bg:'party',hair:'braids',hc:'#2a1a12',skin:'#8d5a3b',top:'bomber',bottom:'jeans',acc:'piercing',hand:'phone'},seek:'знакомства, остальное потом',
+     bio:'учусь, тусуюсь, учусь тусоваться. отвечаю, когда вспомню. обычно не вспоминаю 🙃',tags:['танцы','хип-хоп','кроссовки','флирт'],
+     pq:'красный флаг для меня',pa:'вопрос «кто мы друг другу» на второй встрече',msg:'привет) танцевать умеешь? проверим в субботу'},
+    {n:'Лера',a:20,km:1,zod:'♍ дева',h:160,job:'первокурсница',side:'s',look:{bg:'library',hair:'bob',hc:'#2a1a12',skin:'#f7dcc6',top:'shirt',bottom:'skirt',acc:'glasses',hand:'book'},seek:'серьёзные отношения',
+     bio:'красный диплом, потом магистратура, потом ты. да, именно в таком порядке',tags:['учёба','олимпиады','кофе','амбиции'],
+     pq:'мой идеальный вечер',pa:'созвон, где мы вместе готовимся к экзамену',msg:'Привет. Ты учишься или работаешь? Это первый вопрос из пяти'},
+    {n:'Арина',a:20,km:10,zod:'♌ лев',h:165,job:'вокалистка в группе',side:'d',look:{bg:'roof',hair:'bob',hc:'#1c1820',top:'hoodie',bottom:'cargo',acc:'piercing',hand:'phone'},seek:'ничего серьёзного',
+     bio:'пою в группе и пишу грустные песни про бывших. ты можешь стать следующей песней 🎸',tags:['музыка','гитара','концерты','драма'],
+     pq:'моя суперсила',pa:'пишу песню за одну ночь. про тебя тоже напишу',msg:'привет. придёшь на наш концерт? вход бесплатный, а сердце нет'},
+    {n:'Света',a:24,km:4,zod:'♉ телец',h:162,job:'повар',side:'s',look:{bg:'cafe',hair:'curly',hc:'#c0502e',skin:'#e0ac85',top:'cardigan',bottom:'jeans',acc:'headphones',hand:'tea'},seek:'отношения → семья',
+     bio:'готовлю как бог и кормлю всех вокруг. ищу того, кто будет мыть посуду, а не рассказывать про бывших',tags:['кулинария','рынки','кино','уют'],
+     pq:'как меня зацепить',pa:'просто приходи голодным',msg:'привет! что ты ел сегодня? неправильный ответ: доширак'},
+    {n:'Стефания',a:23,km:5,zod:'♊ близнецы',h:169,job:'бухгалтер / рейвер',side:'d',look:{bg:'party',hair:'pony',hc:'#e8c46a',skin:'#f7dcc6',top:'cardigan',bottom:'cargo',acc:'bow',hand:'energy'},seek:'сама не знаю, чего хочу',
+     bio:'днём бухгалтер в очках, ночью на рейве. меня не понимают ни серьёзки, ни грязнульки',tags:['работа','рейвы','кофе','хаос'],
+     pq:'я тебе не подойду, если',pa:'ты хочешь, чтобы я выбрала что-то одно',msg:'привет. у меня два режима, в какой ты попал, узнаешь в пятницу'}];
+  // per-profile details: face, habits, second prompt, third photo
+  const EXTRA={
+    'Соня':{f:{eye:'round',ec:'#4f7d4a',brow:'soft',lip:'#d07a80',mouth:'smile',fr:true},reply:'сразу',jeal:7,kids:'хочу, но потом',pets:'кот Пушкин',music:'акустика и саундтреки к фильмам',pq2:'книга, которую я перечитываю',pa2:'«Мастер и Маргарита», каждую осень',alt:{bg:'cafe',hand:'book',acc:'none'}},
+    'Кира':{f:{skin:'#e0ac85',eye:'cat',ec:'#2a1a12',brow:'straight',lip:'#6e1f3a',mouth:'smirk',liner:true,ear:'hoops'},reply:'когда захочет',jeal:1,kids:'не думала',pets:'нет, я сама как кошка',music:'пост-панк и что-то громкое',pq2:'моя странная привычка',pa2:'сплю днём, живу ночью',alt:{bg:'roof',hand:'phone',acc:'headphones'}},
+    'Алина':{f:{hc:'#8a5a3a',skin:'#e0ac85',eye:'almond',ec:'#5b3a24',brow:'arched',lip:'#c25b6b',mouth:'smile',ear:'studs'},reply:'в течение часа',jeal:6,kids:'хочу двоих',pets:'мечтаю о корги',music:'поп и всё, под что можно готовить',pq2:'мой план на отпуск',pa2:'уже есть таблица с бюджетом. серьёзно',alt:{bg:'park',hand:'flowers'}},
+    'Ева':{f:{hc:'#d9d9e0',eye:'cat',ec:'#8a6a2e',brow:'arched',lip:'#a3204a',mouth:'smirk',liner:true,ear:'hoops',mole:true},reply:'раз в день',jeal:0,kids:'нет',pets:'нет',music:'хиты с вечеринок',pq2:'лучший комплимент мне',pa2:'«с тобой невозможно скучать»',alt:{bg:'roof',hand:'energy',top:'hoodie'}},
+    'Вера':{f:{hair:'braids',hc:'#c0502e',skin:'#f7dcc6',eye:'round',ec:'#4a78b0',brow:'straight',lip:'#d98a8a',mouth:'neutral',fr:true},reply:'сразу',jeal:5,kids:'хочу',pets:'лабрадор Байкал',music:'классика и подкасты про медицину',pq2:'мой идеальный выходной',pa2:'пробежка, рынок и вечер с книгой',alt:{bg:'park',hand:'tea',top:'sport'}},
+    'Мира':{f:{hair:'bob',hc:'#4a78b0',eye:'sleepy',ec:'#7d8a96',brow:'thick',lip:'#9a5a6a',mouth:'neutral',liner:true,ear:'studs'},reply:'раз в три дня',jeal:2,kids:'какие дети, я сама ребёнок',pets:'крыса Шнур',music:'рэп и шум города',pq2:'мой рекорд',pa2:'не спала 40 часов и ни о чём не жалею',alt:{bg:'roof',hand:'phone',acc:'chains'}},
+    'Ника':{f:{hc:'#c0502e',eye:'almond',ec:'#8a6a2e',brow:'soft',lip:'#c96b74',mouth:'open',fr:true},reply:'сразу, но голосом',jeal:9,kids:'хочу, но не сейчас',pets:'попугай Кеша',music:'стендап вместо музыки',pq2:'я ревную, если',pa2:'ты лайкнул кого-то раньше, чем меня',alt:{bg:'library',hand:'camera'}},
+    'Даша':{f:{hc:'#c0502e',skin:'#f7dcc6',eye:'almond',ec:'#5b3a24',brow:'arched',lip:'#b13a5a',mouth:'open',ear:'hoops'},reply:'когда вспомнит',jeal:1,kids:'нет',pets:'чужие собаки в хостелах',music:'всё, что играет на фестивале',pq2:'мой самый безумный поступок',pa2:'уехала автостопом в Питер на выходные',alt:{bg:'street',hand:'camera',top:'bomber'}},
+    'Лиза':{f:{hair:'bob',hc:'#2a1a12',skin:'#f7dcc6',eye:'round',ec:'#2a1a12',brow:'straight',lip:'#c7585f',mouth:'neutral',mole:true,ear:'studs'},reply:'в течение часа',jeal:8,kids:'хочу',pets:'кошка Фемида',music:'джаз и мюзиклы',pq2:'спорим, что',pa2:'я выиграю любой спор. я будущий юрист',alt:{bg:'cafe',hand:'tea',top:'cardigan'}},
+    'Яна':{f:{skin:'#c68c5e',eye:'cat',ec:'#4f7d4a',brow:'arched',lip:'#7a2340',mouth:'smirk',liner:true,ear:'studs'},reply:'если интересно',jeal:0,kids:'нет',pets:'нет',music:'дарк-поп',pq2:'обо мне говорят, что',pa2:'я холодная. я просто занята',alt:{bg:'party',hand:'camera',acc:'piercing'}},
+    'Полина':{f:{hair:'curly',hc:'#c0502e',eye:'almond',ec:'#7d8a96',brow:'soft',lip:'#c98088',mouth:'smile',fr:true},reply:'в течение дня, осознанно',jeal:3,kids:'хочу, когда буду готова',pets:'кот Фрейд',music:'лоу-фай и звуки дождя',pq2:'мой зелёный флаг',pa2:'ты умеешь сказать «мне обидно» словами',alt:{bg:'park',hand:'tea',acc:'glasses'}},
+    'Влада':{f:{hc:'#e86aa5',eye:'cat',ec:'#4a78b0',brow:'thick',lip:'#8a2a4a',mouth:'open',liner:true,ear:'hoops'},reply:'в 5 утра',jeal:1,kids:'нет',pets:'нет',music:'техно, только техно',pq2:'мой главный страх',pa2:'тишина',alt:{bg:'roof',hand:'phone',acc:'chains'}},
+    'Катя':{f:{hc:'#e8c46a',skin:'#e0ac85',eye:'almond',ec:'#4a78b0',brow:'straight',lip:'#b85c66',mouth:'neutral',ear:'studs'},reply:'в обед и после 19:00',jeal:4,kids:'хочу, после ипотеки',pets:'будет собака',music:'подкасты про финансы',pq2:'мне нравится, когда',pa2:'у человека есть план, а не «как-нибудь»',alt:{bg:'park',hand:'phone',top:'sport'}},
+    'Алиса':{f:{hc:'#4f7d4a',eye:'round',ec:'#4f7d4a',brow:'thick',lip:'#a24a5a',mouth:'open',fr:true,ear:'studs'},reply:'пять сообщений через неделю',jeal:2,kids:'нет',pets:'хорёк Бублик',music:'панк-рок',pq2:'где я сейчас',pa2:'скорее всего на скейтпарке с разбитой коленкой',alt:{bg:'roof',hand:'energy',acc:'piercing'}},
+    'Маша':{f:{hair:'braids',hc:'#e8c46a',eye:'round',ec:'#8a6a2e',brow:'soft',lip:'#e08a96',mouth:'smile',fr:true},reply:'сразу и длинно',jeal:6,kids:'хочу троих',pets:'кошка Булочка',music:'старые песни, которые поёт бабушка',pq2:'я покорю тебя',pa2:'медовиком. проверено',alt:{bg:'park',hand:'flowers',acc:'bow'}},
+    'Карина':{f:{hc:'#e8c46a',skin:'#e0ac85',eye:'cat',ec:'#8a6a2e',brow:'arched',lip:'#c2185b',mouth:'smirk',liner:true,ear:'hoops',mole:true},reply:'через 3 часа, для интриги',jeal:2,kids:'когда-нибудь',pets:'шпиц Луи',music:'r&b',pq2:'мой стандарт',pa2:'свидание без цветов — не свидание',alt:{bg:'cafe',hand:'camera',top:'shirt'}},
+    'Аня':{f:{hair:'curly',hc:'#2a1a12',skin:'#8d5a3b',eye:'almond',ec:'#4f7d4a',brow:'soft',lip:'#c96b74',mouth:'smile',ear:'studs'},reply:'сразу',jeal:5,kids:'хочу',pets:'кот Сухарик',music:'инди-фолк',pq2:'лучшее путешествие',pa2:'поход на Алтай с одним рюкзаком',alt:{bg:'park',hand:'camera',top:'sport'}},
+    'Тая':{f:{hair:'braids',hc:'#2a1a12',skin:'#8d5a3b',eye:'sleepy',ec:'#2a1a12',brow:'straight',lip:'#9a3a4a',mouth:'smirk',liner:true,ear:'studs',mole:true},reply:'после смены, в 4 утра',jeal:1,kids:'не планирую',pets:'кот бара Барон',music:'всё, что ставят на смене',pq2:'мой фирменный напиток',pa2:'безалкогольный, но с характером',alt:{bg:'party',hand:'tea'}},
+    'Ксюша':{f:{hair:'bob',hc:'#8a5a3a',skin:'#c68c5e',eye:'round',ec:'#4a78b0',brow:'soft',lip:'#d07a8a',mouth:'neutral',fr:true},reply:'сразу',jeal:8,kids:'хочу',pets:'две кошки',music:'k-pop (не осуждай)',pq2:'я нарисую тебя, если',pa2:'ты продержишься больше месяца',alt:{bg:'cafe',hand:'book',top:'cardigan'}},
+    'Рита':{f:{hair:'curly',hc:'#c0502e',eye:'almond',ec:'#5b3a24',brow:'thick',lip:'#b0203c',mouth:'open',ear:'hoops'},reply:'голосовыми по 5 минут',jeal:0,kids:'нет',pets:'нет',music:'караоке-хиты 2000-х',pq2:'моя песня в караоке',pa2:'та, которую ты стесняешься петь',alt:{bg:'street',hand:'phone',top:'bomber'}},
+    'Ульяна':{f:{eye:'sleepy',ec:'#4a78b0',brow:'soft',lip:'#c98088',mouth:'smile'},reply:'после смены',jeal:4,kids:'хочу',pets:'хаски Север',music:'тишина после дежурства',pq2:'лучший подарок мне',pa2:'восемь часов сна',alt:{bg:'cafe',hand:'tea',acc:'none',top:'shirt'}},
+    'Злата':{f:{eye:'cat',ec:'#4f7d4a',brow:'straight',lip:'#3a1a2a',mouth:'smirk',liner:true,ear:'hoops',mole:true},reply:'ночью',jeal:1,kids:'нет',pets:'паук Борис',music:'панк и металкор',pq2:'моя первая тату',pa2:'набила в 18, и это секрет',alt:{bg:'party',hand:'phone',acc:'chains'}},
+    'Зарина':{f:{eye:'almond',ec:'#2a1a12',brow:'thick',lip:'#a24a5a',mouth:'smile',ear:'studs'},reply:'после код-ревью',jeal:5,kids:'хочу, но потом',pets:'кот Баг',music:'lo-fi для кодинга',pq2:'мой главный баг',pa2:'пишу «щас» и пропадаю в коде на 4 часа',alt:{bg:'library',hand:'phone',top:'cardigan'}},
+    'Вика':{f:{eye:'almond',ec:'#2a1a12',brow:'arched',lip:'#7a2a5a',mouth:'open',liner:true,ear:'hoops'},reply:'в понедельник',jeal:0,kids:'нет',pets:'нет',music:'хардтекно',pq2:'мой дресс-код',pa2:'всё, в чём можно танцевать 8 часов',alt:{bg:'roof',hand:'phone',acc:'piercing'}},
+    'Оля':{f:{eye:'round',ec:'#4f7d4a',brow:'soft',lip:'#c7585f',mouth:'smile',fr:true},reply:'вечером, после тетрадей',jeal:6,kids:'хочу двоих',pets:'кот Пятёрка',music:'песни у костра',pq2:'мой красный флаг',pa2:'ошибки в «-тся/-ться». да, я замечу',alt:{bg:'park',hand:'book',top:'sweater'}},
+    'Ася':{f:{eye:'round',ec:'#7a5cff',brow:'thick',lip:'#c96b9a',mouth:'open'},reply:'между катками',jeal:3,kids:'нет',pets:'кот Лагер',music:'саундтреки из игр',pq2:'мой ранг',pa2:'выше, чем у тебя. проверим?',alt:{bg:'party',hand:'energy',top:'bomber'}},
+    'Таня':{f:{eye:'almond',ec:'#4a78b0',brow:'straight',lip:'#c96b74',mouth:'smile',fr:true},reply:'после тренировки',jeal:5,kids:'хочу',pets:'нет, вечные сборы',music:'плейлист для зала',pq2:'мой рекорд',pa2:'подача 80 км/ч',alt:{bg:'cafe',hand:'tea',top:'hoodie'}},
+    'Милана':{f:{eye:'cat',ec:'#4a78b0',brow:'arched',lip:'#d0507a',mouth:'smile',liner:true,ear:'hoops'},reply:'в сторис',jeal:2,kids:'не сейчас',pets:'шпиц для контента',music:'то, что в трендах',pq2:'мой контент-план',pa2:'ты можешь в него попасть, если повезёт',alt:{bg:'cafe',hand:'phone',top:'shirt'}},
+    'Даяна':{f:{eye:'cat',ec:'#2a1a12',brow:'arched',lip:'#a0304a',mouth:'smile',ear:'hoops'},reply:'сразу, если не с клиенткой',jeal:9,kids:'хочу',pets:'кошка Шанель',music:'турецкие сериалы вместо музыки',pq2:'я влюблюсь, если',pa2:'ты запомнишь мой любимый цвет',alt:{bg:'roof',hand:'flowers'}},
+    'Лина':{f:{eye:'sleepy',ec:'#4f7d4a',brow:'thick',lip:'#8a3a3a',mouth:'smirk',fr:true,ear:'studs'},reply:'на светофорах',jeal:1,kids:'нет',pets:'нет',music:'классический рок',pq2:'мой маршрут мечты',pa2:'по трассе до моря без остановок',alt:{bg:'roof',hand:'energy',top:'hoodie'}},
+    'Женя':{f:{eye:'round',ec:'#8a6a2e',brow:'soft',lip:'#d08a8a',mouth:'open',fr:true},reply:'сразу, с фото котиков',jeal:3,kids:'хочу',pets:'два кота и пёс на передержке',music:'инди и подкасты про животных',pq2:'мой зелёный флаг',pa2:'ты останавливаешься погладить каждую собаку',alt:{bg:'cafe',hand:'tea',top:'sweater'}},
+    'Диана':{f:{eye:'almond',ec:'#2a1a12',brow:'arched',lip:'#7a2a4a',mouth:'open',ear:'hoops'},reply:'когда вспомнит',jeal:1,kids:'нет',pets:'нет',music:'хип-хоп и афробит',pq2:'мой фирменный трюк',pa2:'танцую так, что ты забудешь, как меня зовут',alt:{bg:'street',hand:'energy',top:'sport'}},
+    'Лера':{f:{eye:'round',ec:'#5b3a24',brow:'straight',lip:'#c98088',mouth:'neutral',mole:true},reply:'после пар',jeal:6,kids:'после диплома',pets:'кактус Кеша',music:'классика для учёбы',pq2:'мой средний балл',pa2:'4,9. и я не шучу',alt:{bg:'cafe',hand:'tea',top:'cardigan'}},
+    'Арина':{f:{eye:'sleepy',ec:'#7d8a96',brow:'straight',lip:'#3a1a2a',mouth:'smirk',liner:true,ear:'studs'},reply:'песней',jeal:3,kids:'нет',pets:'кот Курт',music:'гранж',pq2:'моя последняя песня',pa2:'про парня, который ответил «ок»',alt:{bg:'party',hand:'phone',acc:'chains'}},
+    'Света':{f:{eye:'round',ec:'#8a6a2e',brow:'soft',lip:'#c0585a',mouth:'open',fr:true},reply:'между заказами',jeal:5,kids:'хочу',pets:'кот Пельмень',music:'радио на кухне',pq2:'мой фирменный ужин',pa2:'паста, после которой не уходят',alt:{bg:'park',hand:'flowers',top:'sweater'}},
+    'Стефания':{f:{eye:'almond',ec:'#4a78b0',brow:'arched',lip:'#b0305a',mouth:'smirk',liner:true,ear:'studs'},reply:'днём сразу, ночью никогда',jeal:5,kids:'спроси днём',pets:'кот Отчёт',music:'днём джаз, ночью техно',pq2:'два моих режима',pa2:'таблицы днём и танцы до утра',alt:{bg:'library',hand:'book',acc:'glasses',top:'shirt',bottom:'skirt'}}};
+  const GMETER={'Кира':10,'Ева':10,'Рита':10,'Мира':9,'Злата':9,'Вика':9,'Влада':9,'Даша':9,'Яна':9,'Милана':8,'Арина':8,'Лина':8,'Диана':8,'Алиса':8,'Тая':7,'Карина':7,'Ася':7,'Стефания':6,'Даяна':4,'Ника':3,'Аня':3,'Зарина':3,'Женя':3,'Соня':2,'Лиза':2,'Полина':2,'Ксюша':2,'Ульяна':2,'Таня':2,'Света':2,'Алина':1,'Вера':1,'Катя':1,'Маша':1,'Оля':1,'Лера':1};
+  PROFILES.forEach(p=>{p.g=GMETER[p.n]});
+  PROFILES.forEach(p=>{const x=EXTRA[p.n];if(!x)return;p.look={...p.look,...x.f};Object.assign(p,x)});
+
+  const PT=[
+    [20,'Серьёзка','Тебе нужна серьёзка: верность, «доброе утро» каждый день, знакомство с друзьями и общие планы на будущее. Ты ищешь отношения, а не приключение на неделю.','Книжный, кофейня у окна и разговор до закрытия','Отвечает сразу и не пропадает','Уже на третьем свидании спрашивает, как ты видишь вас через пять лет'],
+    [40,'Серьёзка с искрой','Тебе важны верность и серьёзные намерения, но без скуки. Идеально: надёжный человек, который иногда утаскивает тебя на внезапный концерт.','Выставка днём, а вечером караоке с её друзьями','Честно говорит, чего хочет, и держит слово','Сохраняет скриншоты всех ваших переписок «на память»'],
+    [61,'Вайб-микс','Тебе нравятся и свобода, и надёжность. Тебе подойдёт человек, с которым можно и тусоваться до утра, и строить планы. Главное — договориться на берегу, чего хотите оба.','Утром блинчики, ночью прогулка под гирляндами','С ней можно и в библиотеку, и на фестиваль','Сама не знает, серьёзка она или грязнулька, и спрашивает об этом тебя'],
+    [81,'Грязнулька с мягким сердцем','Тебя тянет к лёгкости, флирту и тусовкам, но тебе важно, чтобы человек был тёплым и честным. Не скучные обещания, а живые эмоции и забота в моменте.','Ночная прогулка по городу и шаурма у метро','Флиртует, но с тобой всегда честна','Голосовые по 7 минут, и 5 из них про вчерашнюю вечеринку'],
+    [101,'Грязнулька','Тебе подходит лёгкость без обязательств: флирт, вечеринки, новые знакомства и спонтанность. Работает, только если вы оба хотите одного и того же и никто не ждёт большего.','Концерт, потом тусовка, потом рассвет в круглосуточной кофейне','Никогда не бывает скучно и никто никого не держит','Пишет «выходи» в 2 ночи и искренне не понимает, почему ты спишь']];
+  const NOONE=['Свободный вайб','Тебе не подошла ни одна анкета. Похоже, сейчас тебе лучше всех с самим собой, и это тоже отличный мэтч.','Свидание с собой: любимый фильм и вкусная еда','Тебе никто не нужен, чтобы быть интересным','Отклоняешь всех, даже анкету с кружкой с сердечком'];
+  let deck=[],di=0,pLiked=[],sLocked=false,lastText='';
+  function shuffle(a){return a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1])}
+  const swc=$('swCard');
+  const photo=(L,vb)=>`<svg viewBox="${vb||'0 0 240 300'}" preserveAspectRatio="xMidYMin slice" aria-hidden="true">${figSVG(L)}</svg>`;
+  function minis(list){return list.map(p=>`<span title="${p.n}">${photo(p.look,'78 46 84 84')}</span>`).join('')}
+  let photoIdx=0,curPhotos=[];
+  function photosOf(p){return [{L:p.look},{L:p.look,vb:'64 34 112 140'},{L:{...p.look,...(p.alt||{})}}]}
+  function renderPhoto(){
+    const ph=swc.querySelector('.pf-photo svg'),ps=curPhotos[photoIdx];
+    ph.setAttribute('viewBox',ps.vb||'0 0 240 300');ph.innerHTML=figSVG(ps.L);
+    swc.querySelectorAll('.pf-bars i').forEach((b,i)=>b.classList.toggle('on',i===photoIdx));
+  }
+  function sShow(){
+    const p=deck[di];sLocked=false;photoIdx=0;curPhotos=photosOf(p);
+    const g=p.g??(p.side==='d'?8:2);
+    swc.innerHTML=`<span class="stamp yes">ДА</span><span class="stamp no">НЕТ</span>
+      <div class="pf-photo"><svg viewBox="0 0 240 300" preserveAspectRatio="xMidYMin slice" aria-hidden="true"></svg>
+        <div class="pf-bars">${curPhotos.map(()=>'<i></i>').join('')}</div>
+        <div class="pf-name"><b>${p.n}, ${p.a}</b><span>${p.km} км от тебя · ${p.side==='d'?'была в сети '+(1+((p.a*7)%23))+' ч назад':'онлайн'}</span></div></div>
+      <div class="pf-body">
+        <div class="pf-row"><span class="pf-seek ${p.side}">ищу: ${p.seek}</span><span class="pf-meta">${p.zod} · ${p.h} см · ${p.job}</span></div>
+        <p class="pf-bio">${p.bio}</p>
+        <div class="gm"><div class="gm-top"><small>грязнулька-метр</small><b>${g}/10</b></div><i class="gm-bar"><em style="width:${g*10}%"></em></i><div class="gm-ends"><span>серьёзка</span><span>грязнулька</span></div></div>
+        <div class="pf-prompt"><span>${p.pq}</span><p>${p.pa}</p></div>
+      </div>`;
+    renderPhoto();swc.scrollTop=0;
+    swc.setAttribute('aria-label','Анкета: '+p.n+', '+p.a+'. Ищет: '+p.seek);
+    swc.style.transition='none';swc.style.transform='translateY(16px) scale(.96)';swc.style.opacity='0';
+    $('swNum').textContent=(di+1)+' / '+deck.length;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{swc.style.transition='';swc.style.transform='';swc.style.opacity='1'}));
+  }
+  function decide(yes){
+    if(sLocked)return;sLocked=true;const p=deck[di];
+    swc.style.transform=`translateX(${yes?140:-140}%) rotate(${yes?24:-24}deg)`;swc.style.opacity='0';
+    if(yes){pLiked.push(p);$('likesRow').innerHTML=minis(pLiked)}
+    setTimeout(()=>{di++;if(di<deck.length)sShow();else sMatch()},320);
+  }
+  let sx=0,sy=0,dx=0,dragging=false;
+  swc.addEventListener('pointerdown',e=>{if(sLocked)return;dragging=true;sx=e.clientX;sy=e.clientY;dx=0;swc.classList.add('drag');try{swc.setPointerCapture(e.pointerId)}catch(_){}});
+  swc.addEventListener('pointermove',e=>{if(!dragging)return;dx=e.clientX-sx;const dy=(e.clientY-sy)*.2;
+    swc.style.transform=`translate(${dx}px,${dy}px) rotate(${dx/14}deg)`;
+    const y=swc.querySelector('.stamp.yes'),n=swc.querySelector('.stamp.no');
+    if(y)y.style.opacity=Math.max(0,Math.min(1,dx/90));if(n)n.style.opacity=Math.max(0,Math.min(1,-dx/90))});
+  const endDrag=e=>{if(!dragging)return;dragging=false;swc.classList.remove('drag');
+    if(Math.abs(dx)<6&&e&&e.type==='pointerup'){const ph=e.target.closest&&e.target.closest('.pf-photo');if(ph){const r=ph.getBoundingClientRect();photoIdx=(photoIdx+(e.clientX-r.left>r.width/2?1:curPhotos.length-1))%curPhotos.length;renderPhoto()}swc.style.transform='';return}
+    if(Math.abs(dx)>90)decide(dx>0);else{swc.style.transform='';swc.querySelectorAll('.stamp').forEach(s=>s.style.opacity=0)}};
+  swc.addEventListener('pointerup',endDrag);swc.addEventListener('pointercancel',endDrag);
+  swc.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){e.preventDefault();decide(true)}if(e.key==='ArrowLeft'){e.preventDefault();decide(false)}});
+  $('swYes').addEventListener('click',()=>decide(true));$('swNo').addEventListener('click',()=>decide(false));
+  let matchLook=NEUTRAL;
+  function sMatch(){
+    const s=pLiked.filter(p=>p.side==='s').length,d=pLiked.length-s;
+    let T,pct=50,m=null;
+    if(!pLiked.length){T=[0,...NOONE]}
+    else{pct=Math.round(d/pLiked.length*100);T=PT.find(t=>pct<t[0]);
+      const side=pct>50?'d':pct<50?'s':(Math.random()<.5?'s':'d');
+      const pool=pLiked.filter(p=>p.side===side);m=pool[Math.floor(Math.random()*pool.length)]||pLiked[0]}
+    $('swipe').hidden=true;$('match').hidden=false;
+    matchLook=m?m.look:NEUTRAL;
+    $('mfig').innerHTML=figSVG(matchLook);
+    $('mName').textContent=m?m.n+', '+m.a:'Ты';$('mSeek').textContent=m?'ищет: '+m.seek:'ищешь: себя';
+    $('mChat').hidden=!m;if(m)startChat(m)
+    $('mTitle').textContent=T[1];$('mDesc').textContent=T[2];$('mDate').textContent=T[3];$('mGreen').textContent=T[4];$('mRed').textContent=T[5];
+    $('mS').textContent=s;$('mD').textContent=d;
+    const why=m?['вы оба цените: '+m.tags.slice(0,2).join(' и '),'тебя зацепило: «'+m.pq+' — '+m.pa+'»','она ищет '+m.seek]:['ты выбираешь свободу'];
+    $('mWhy').innerHTML=why.map(()=>'<li></li>').join('');[...$('mWhy').children].forEach((li,i)=>li.textContent=why[i]);
+    $('mTip').textContent='Серьёзки и грязнульки расходятся не из-за худи и энергетиков, а из-за разных ожиданий. Поэтому в начале честно скажи, что ищешь ты.';
+    $('mMinis').innerHTML=pLiked.length?minis(pLiked):'<em>пока никого</em>';
+    $('ppin').style.left='50%';requestAnimationFrame(()=>requestAnimationFrame(()=>$('ppin').style.left=Math.min(98,Math.max(2,pct))+'%'));
+    lastText='Мой мэтч в приложении «Вайб»: '+T[1]+(m?' ('+m.n+', '+m.a+', ищет '+m.seek+')':'')+'. Серьёзка или грязнулька — проверь сам!';
+    store.set('pair-last',{pct,type:T[1]});
+    $('match').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  /* ---------- chat after match ---------- */
+  let chatP=null,chatN=0,chatT=[],ghost=0,usedQ=[];
+  const pick=a=>a[Math.floor(Math.random()*a.length)];
+  function later(fn,ms){chatT.push(setTimeout(fn,ms))}
+  let lastHer=null,role='me';
+  function addMsg(t,me,by){record(t,me,by);const el=document.createElement('p');el.className='bubble'+(me?' me':'');el.textContent=t;if(!me)lastHer=el;
+    const ty=$('cTyping');ty?$('cLog').insertBefore(el,ty):$('cLog').appendChild(el);$('cLog').scrollTop=1e6}
+  function typing(on){let t=$('cTyping');
+    if(on&&!t){t=document.createElement('p');t.id='cTyping';t.className='bubble typing';t.innerHTML='<i></i><i></i><i></i>';$('cLog').appendChild(t)}
+    if(!on&&t)t.remove();$('cLog').scrollTop=1e6;
+    if(chatP)$('cStatus').textContent=on?'печатает…':(chatP.side==='d'&&ghost?'была в сети только что':'онлайн')}
+  const QUICK=['привет! 👋','что ищешь здесь?','пойдём на свидание?','расскажи о себе','что слушаешь?','у тебя есть питомцы?','ты ревнивая?','ты красивая','хочешь детей?','дашь номер?'];
+  function setQuick(){const left=QUICK.filter(q=>!usedQ.includes(q)).slice(0,4);
+    $('cQuick').innerHTML=left.map((q,i)=>`<button type="button" id="cq-${i}">${q}</button>`).join('')}
+  function answer(text){
+    const p=chatP,t=text.toLowerCase(),S=p.side==='s';
+    if(/привет|хай|хей|здравств|йоу|ку\b/.test(t))return pick(S?['Привет! Рада, что ты написал 🙂','Привет :) Как прошёл день?']:['хей)','йоу','ну привет 😏']);
+    if(/ищ|серь[её]з|отношен/.test(t))return S?`Я ищу ${p.seek}. А ты? Только честно, без «посмотрим»`:pick([`${p.seek}, я же написала в анкете)`,'серьёзное — это не ко мне. весело — ко мне','давай без ярлыков, ок?']);
+    if(/свидан|гулять|встрет|погнали|кофе|увид|сходим/.test(t))return S?pick(['Давай! Только не «куда-нибудь», а конкретно: где и во сколько?','Можно в субботу днём. Я скажу подруге, где буду 🙂']):pick(['го сегодня? в 23:00 норм?','можно. только я опоздаю часа на полтора','давай. но если будет скучно, я уйду)']);
+    if(/музык|слуша|песн|трек/.test(t))return `${S?'Сейчас слушаю':'в наушниках'}: ${p.music||'всё подряд'}`;
+    if(/о себе|расскажи|кто ты|чем занима|работ|уч[её]шь/.test(t))return `${p.job}. ${p.bio.split(/[.!]/)[0]}${S?'.':')'}`;
+    if(/кот|собак|питом|живот|кошк/.test(t))return S?`У меня ${p.pets||'пока никого'} 🙂`:`${p.pets||'нет'}`;
+    if(/ревн/.test(t))return `ревность ${p.jeal}/10. ${p.jeal>6?'так что лучше не давай поводов':p.jeal<3?'мне вообще всё равно, с кем ты переписываешься':'в меру'}`;
+    if(/дет/.test(t))return S?`Дети? ${p.kids}. Для меня это важный вопрос`:`дети? ${p.kids}. давай не так быстро)`;
+    if(/красив|нравишься|мил|симпатич|влюб/.test(t))return pick(S?['Спасибо, приятно 🙂 Но давай сначала узнаем друг друга','Ой, это мило. Ты всем так пишешь?']:['знаю)','спасибо, ты тоже ничего','комплимент засчитан 😏']);
+    if(/номер|телеф|инст|тг|телеграм/.test(t))return S?'Давай сначала встретимся, а потом номера 🙂':'номер? сначала заслужи)';
+    if(/\?\s*$/.test(t))return S?pick(['Хороший вопрос. А ты сам как думаешь?',`${p.pq2?p.pq2[0].toUpperCase()+p.pq2.slice(1)+': '+p.pa2:'Подумаю и отвечу'}`]):pick(['хз)','а тебе зачем?)','спроси на свидании']);
+    return null;
+  }
+  // live roleplay through Claude (sample capability); scripted answers stay as fallback
+  let aiSample=null,aiOff=false,turns=[],aiCtl=null;
+  (async()=>{try{if(window.claude&&claude.use)aiSample=await claude.use('sample')}catch(e){aiSample=null}setMode()})();
+  function rules(p){
+    const S=p.side==='s';
+    return `Ты играешь роль девушки по имени ${p.n} в шуточном приложении знакомств «Вайб» на сайте про тренд из TikTok «серьёзка vs грязнулька». Ты персонаж, а не ассистент. Собеседник лайкнул твою анкету, у вас мэтч, вы переписываетесь.
+
+Твоя анкета:
+- ${p.n}, ${p.a} лет, ${p.zod}, рост ${p.h} см, ${p.job}
+- ищет: ${p.seek}
+- о себе: ${p.bio}
+- ${p.pq}: ${p.pa}
+${p.pq2?`- ${p.pq2}: ${p.pa2}\n`:''}- грязнулька-метр: ${p.g}/10
+- отвечает: ${p.reply||'по-разному'}; ревность ${p.jeal??5}/10; дети: ${p.kids||'не думала'}; питомцы: ${p.pets||'нет'}
+- музыка: ${p.music||'разная'}; интересы: ${p.tags.join(', ')}
+
+Твой типаж: ${S?'СЕРЬЁЗКА. Ищешь настоящие отношения, ценишь верность и честность, пишешь грамотно и тепло, с заглавной буквы, иногда 🙂. Задаёшь вопросы о намерениях и планах, проверяешь, серьёзен ли человек. Тебя отталкивают «посмотрим, как пойдёт», ответы «ок», грубость и разговоры о бывших.':'ГРЯЗНУЛЬКА. Любишь флирт, тусовки и новые знакомства, серьёзные отношения не ищешь и говоришь это прямо. Пишешь строчными, коротко, со сленгом, иногда с эмодзи, немного лениво и дерзко. Уходишь от разговоров про «кто мы друг другу», зовёшь на тусовки и спонтанные встречи.'}
+
+Правила:
+- Отвечай только текстом своего следующего сообщения: без кавычек, без имени, без пояснений. Обычно одно короткое сообщение (до 200 символов), как в мессенджере, по-русски.
+- Отвечай по смыслу на последнее сообщение собеседника, естественно, как живой человек в переписке. Не перегибай со сленгом и не повторяй фразы из анкеты дословно.
+- Держись характера и фактов анкеты, придумывай детали в её духе. Помни всё, что было в переписке.
+- Если не понимаешь сообщение или не знаешь, что ответить в образе, ответь ровно тремя знаками: ???
+- Ты взрослая. Никакого откровенного или сексуального контента: если собеседник пошлит, отшей его в своём стиле.
+- Не давай реальных телефонов, адресов и соцсетей: отшучивайся или предлагай общаться здесь.
+- Если собеседник искренне и прямо спрашивает, человек ли ты, коротко признай, что ты игровой персонаж сайта, и можешь продолжить игру.
+- Если собеседник пишет о чём-то по-настоящему тревожном (вред себе, опасность), выйди из роли и ответь по-человечески и бережно.`;
+  }
+  function bubble(){const el=document.createElement('p');el.className='bubble';lastHer=el;const ty=$('cTyping');ty?$('cLog').insertBefore(el,ty):$('cLog').appendChild(el);return el}
+  function aiReply(p){
+    const ctl=aiCtl=new AbortController();let el=null;
+    typing(true);
+    const input=[{role:'user',content:rules(p)},...turns.slice(-24)];
+    return aiSample(input,{cache:false,modelTier:'default',effort:'low',signal:ctl.signal,onText:({text})=>{
+        if(chatP!==p||text.trim().startsWith('?'))return;if(!el){typing(false);el=bubble()}el.textContent=text;$('cLog').scrollTop=1e6}})
+      .then(({text})=>{if(chatP!==p)return;typing(false);if(text.trim().startsWith('???')){if(el)el.remove();showAsk(p);return}turns.push({role:'assistant',content:text});
+        if(!el){el=bubble();el.textContent=text}record(text,false,'ai')})
+      .catch(e=>{if(chatP!==p)return;typing(false);
+        if(e&&e.code==='cancelled')return;
+        if(e&&['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].includes(e.code)){aiOff=true;setMode()}
+        if(el&&!e.text)el.remove();
+        const r=answer(turns.length?turns[turns.length-1].content:'');if(r===null)showAsk(p);else{addMsg(r);turns.push({role:'assistant',content:r})}
+        if(e&&e.code==='rate_limited')toast('Claude устал отвечать, попробуй чуть позже');});
+  }
+  function setMode(){const live=aiSample&&!aiOff;$('cMode').textContent=live?'живой чат · отвечает Claude в образе':'офлайн-режим · заготовленные ответы';$('cMode').classList.toggle('live',!!live)}
+  function send(text){
+    text=text.trim();if(!text||!chatP)return;
+    const p=chatP,S=p.side==='s';
+    hideAsk();addMsg(text,true);chatN++;usedQ.push(text);setQuick();turns.push({role:'user',content:text});
+    if(manual)return;
+    if(!S&&!ghost&&chatN>=3&&Math.random()<.3){ // ghosting, part of the character
+      ghost=1;$('cStatus').textContent='была в сети только что';
+      later(()=>{typing(true);later(()=>{typing(false);const g=pick(['сорри, была на тусе)','ой, пропала. ты тут?','прости, телефон сел 🙃']);addMsg(g);turns.push({role:'assistant',content:g})},1800)},7000);return}
+    if(!S&&ghost===1)ghost=2;
+    const wait=S?400+Math.random()*500:1000+Math.random()*1800;
+    if(aiSample&&!aiOff){later(()=>{if(chatP===p)aiReply(p)},wait);return}
+    const r=answer(text);
+    if(r===null){later(()=>{if(chatP===p)showAsk(p)},wait);return}
+    later(()=>{typing(true);later(()=>{typing(false);addMsg(r);turns.push({role:'assistant',content:r})},Math.min(2600,400+r.length*25))},wait);
+  }
+  function startChat(p){
+    chatT.forEach(clearTimeout);chatT=[];aiCtl&&aiCtl.abort();chatP=p;chatN=0;ghost=0;usedQ=[];turns=[{role:'assistant',content:p.msg}];
+    $('cLog').innerHTML='';lastHer=null;hideAsk();setRole('me');chatReset(p);$('mFrom').textContent=p.n;$('cAv').innerHTML=photo(p.look,'78 46 84 84');
+    $('cStatus').textContent=p.side==='d'?'была в сети недавно':'онлайн';setMode();
+    later(()=>{typing(true);later(()=>{typing(false);addMsg(p.msg)},1100)},400);setQuick();
+  }
+  $('cQuick').addEventListener('click',e=>{const b=e.target.closest('button');if(b)send(b.textContent)});
+  function setRole(r){role=r;const her=r==='her';$('cForm').classList.toggle('her',her);$('cHer').setAttribute('aria-pressed',her);
+    $('cInput').placeholder=her&&chatP?'Пишешь от лица '+chatP.n+'…':'Напиши сообщение…';if(her)$('cInput').focus()}
+  function showAsk(p){typing(false);$('cAsk').textContent=p.n+' не знает, что ответить. Ответь за неё ✍';$('cAsk').hidden=false;setRole('her')}
+  function hideAsk(){$('cAsk').hidden=true}
+  function herSay(text){
+    text=text.trim();if(!text||!chatP)return;
+    aiCtl&&aiCtl.abort();chatT.forEach(clearTimeout);chatT=[];typing(false);hideAsk();
+    addMsg(text,false,'self');turns.push({role:'assistant',content:text});setRole('me');
+  }
+  function regen(){
+    if(!chatP)return;const last=turns[turns.length-1];
+    if(!last||last.role!=='assistant'||turns.length<2){toast('Сначала напиши ей что-нибудь');return}
+    aiCtl&&aiCtl.abort();chatT.forEach(clearTimeout);chatT=[];
+    turns.pop();if(lastHer)lastHer.remove();lastHer=null;hideAsk();
+    if(aiSample&&!aiOff)aiReply(chatP);
+    else{const u=turns[turns.length-1];const r=u?answer(u.content):null;if(r===null)showAsk(chatP);else{addMsg(r);turns.push({role:'assistant',content:r})}}
+  }
+  $('cRegen').addEventListener('click',regen);
+  $('cHer').addEventListener('click',()=>setRole(role==='her'?'me':'her'));
+  $('cForm').addEventListener('submit',e=>{e.preventDefault();const v=$('cInput').value;if(role==='her')herSay(v);else send(v);$('cInput').value=''});
+
+  /* ---------- saved chats + admin panel (db) ---------- */
+  // chats/<visitorId>                 visitor's side: {who, side, msgs:[{id,from,by,text,at}], startedAt, updatedAt}
+  // chats/<visitorId>/admin/state     admin's side:   {msgs:[{id,text,at}], manual, typing, at}
+  let DB=null,USER=null,myId=null,isOwnerV=false,log=[],manual=false,chatStart=0,saveTimer=0,saving=false,saveAgain=false,adminUnsub=null,shownAdmin=new Set();
+  const rid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+  function record(t,me,by){
+    if(by==='admin'||!chatP)return;
+    log.push({id:rid(),from:me?'me':'her',by:by||(me?'me':'bot'),text:String(t).slice(0,600),at:Date.now()});
+    if(log.length>120)log=log.slice(-120);
+    saveChat();
+  }
+  function saveChat(){if(!DB||!myId||!chatP)return;clearTimeout(saveTimer);saveTimer=setTimeout(flush,600)}
+  async function flush(){
+    if(saving){saveAgain=true;return}saving=true;
+    try{await DB.doc('chats/'+myId).set({who:chatP.n,side:chatP.side,msgs:log,startedAt:chatStart,updatedAt:Date.now()})}catch(e){}
+    saving=false;if(saveAgain){saveAgain=false;flush()}
+  }
+  async function chatReset(p){
+    log=[];manual=false;chatStart=Date.now();shownAdmin=new Set();
+    $('cNote').hidden=!(DB&&myId);
+    if(!DB||!myId)return;
+    try{await DB.doc('chats/'+myId+'/admin/state').set({msgs:[],manual:false,typing:false,at:chatStart})}catch(e){}
+  }
+  function listenAdmin(){
+    if(!DB||!myId||adminUnsub)return;
+    adminUnsub=DB.doc('chats/'+myId+'/admin/state').onSnapshot(snap=>{
+      const d=snap.exists?snap.data():null;if(!d||!chatP)return;
+      manual=!!d.manual;
+      if(d.typing)typing(true);
+      (d.msgs||[]).forEach(m=>{if(m.at<chatStart||shownAdmin.has(m.id))return;shownAdmin.add(m.id);
+        aiCtl&&aiCtl.abort();chatT.forEach(clearTimeout);chatT=[];typing(false);hideAsk();
+        addMsg(m.text,false,'admin');turns.push({role:'assistant',content:m.text})});
+      if(!d.typing&&$('cTyping')&&manual)typing(false);
+    },()=>{});
+  }
+
+  // ----- admin view -----
+  let admList=[],admSel=null,admState=null,admSelUnsub=null,admBusy=false,admTypingSent=false;
+  function route(){
+    const FB=!!window.__fb;const on=location.hash==='#admin'&&(isOwnerV||FB);if(FB)unlocked=isOwnerV;$('admEmail').hidden=!(FB&&!window.ADMIN_EMAIL);
+    $('admin').hidden=!on;document.querySelector('.wrap').hidden=on;document.querySelector('nav.top').hidden=on;
+    $('adminBtn').hidden=!isOwnerV||on;
+    $('admLock').hidden=!on||unlocked;$('admBody').hidden=!unlocked;
+    if(on&&unlocked)startAdmin();
+    if(on&&!unlocked)setTimeout(()=>$('admPass').focus(),50);
+  }
+  let admStarted=false,unlocked=false;
+  try{unlocked=sessionStorage.getItem('adm-ok')==='1'}catch(e){}
+  const PASS_HASH='4ffb3cc4a8f9e210808d3cc740eeba17f53af9e6218c5333cf5a626f8b0f8a14';
+  async function hashPass(v){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('vibe-admin:'+v));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+  $('admLock').addEventListener('submit',async e=>{e.preventDefault();
+    if(window.__fb){const ok=await window.__fb.login(window.ADMIN_EMAIL||$('admEmail').value.trim(),$('admPass').value).catch(()=>false);if(!ok){$('admErr').hidden=false;return}
+      isOwnerV=true;unlocked=true;myId=await USER.id();$('admPass').value='';$('admErr').hidden=true;route();return}
+    let ok=false;try{ok=(await hashPass($('admPass').value.trim()))===PASS_HASH}catch(_){ok=$('admPass').value.trim()==='1235'}
+    if(!ok){$('admErr').hidden=false;$('admPass').select();return}
+    unlocked=true;try{sessionStorage.setItem('adm-ok','1')}catch(_){}
+    $('admPass').value='';$('admErr').hidden=true;route()});
+  function startAdmin(){
+    if(admStarted||!DB)return;admStarted=true;
+    $('admEmpty').textContent='Загружаю переписки…';
+    const t=setTimeout(()=>{if(!admList.length)$('admEmpty').textContent='Пока переписок нет или они не загрузились. Как только кто-то напишет героине после мэтча, чат появится здесь.'},10000);
+    DB.collection('chats').orderBy('updatedAt','desc').limit(60).onSnapshot(snap=>{
+      clearTimeout(t);admList=snap.docs.map(d=>({id:d.id,...d.data()}));renderAdmList();if(admSel)renderAdmChat();
+    },()=>{$('admEmpty').textContent='Не удалось загрузить переписки.'});
+  }
+  const ago=ts=>{const s=Math.round((Date.now()-ts)/1000);return s<60?'только что':s<3600?Math.floor(s/60)+' мин назад':s<86400?Math.floor(s/3600)+' ч назад':Math.floor(s/86400)+' д назад'};
+  const guest=id=>id===myId?'Ты (тест)':'Гость '+id.slice(-4).toUpperCase();
+  function renderAdmList(){
+    $('admEmpty').hidden=admList.length>0;
+    $('admList').innerHTML=admList.map(c=>{const last=(c.msgs||[])[c.msgs.length-1];const pr=PROFILES.find(p=>p.n===c.who);
+      return `<button type="button" class="adm-item${admSel===c.id?' on':''}" id="adm-${c.id}" data-id="${c.id}"><span class="adm-av">${pr?photo(pr.look,'78 46 84 84'):''}</span><span class="adm-txt"><b></b><small></small></span><span class="adm-time">${c.updatedAt?ago(c.updatedAt):''}</span>${last&&last.from==='me'?'<i class="adm-dot"></i>':''}</button>`}).join('');
+    [...$('admList').children].forEach((b,i)=>{const c=admList[i],last=(c.msgs||[])[c.msgs.length-1];
+      b.querySelector('b').textContent=guest(c.id)+' → '+(c.who||'?');b.querySelector('small').textContent=last?(last.from==='me'?'': (c.who||'')+': ')+last.text:'нет сообщений'});
+  }
+  function selectChat(id){
+    admSel=id;admState=null;admSelUnsub&&admSelUnsub();
+    admSelUnsub=DB.doc('chats/'+id+'/admin/state').onSnapshot(s=>{admState=s.exists?s.data():{msgs:[],manual:false};renderAdmChat()},()=>{});
+    renderAdmList();renderAdmChat();$('admin').classList.add('has-sel');
+  }
+  function renderAdmChat(){
+    const c=admList.find(x=>x.id===admSel);$('admChat').hidden=!c;if(!c)return;
+    const pr=PROFILES.find(p=>p.n===c.who);
+    $('admWho').textContent=guest(c.id)+' → '+(c.who||'?');
+    $('admSeek').textContent=pr?'Ты отвечаешь как '+pr.n+', '+pr.a+' · '+(pr.side==='d'?'грязнулька':'серьёзка')+' '+pr.g+'/10 · ищет: '+pr.seek:'';
+    $('admManual').checked=!!(admState&&admState.manual);
+    const all=[...(c.msgs||[]).filter(m=>m.at>=(c.startedAt||0)),...((admState&&admState.msgs)||[]).filter(m=>m.at>=(c.startedAt||0)).map(m=>({...m,from:'her',by:'admin'}))].sort((a,b)=>a.at-b.at);
+    const BY={ai:'ИИ',bot:'заготовка',self:'гость за неё',admin:'ты',me:''};
+    $('admLog').innerHTML=all.map(()=>'<div class="adm-msg"><p class="bubble"></p><small></small></div>').join('');
+    [...$('admLog').children].forEach((el,i)=>{const m=all[i];el.className='adm-msg '+(m.from==='me'?'guest':'her')+(m.by==='admin'?' mine':'');
+      el.querySelector('p').textContent=m.text;el.querySelector('small').textContent=(m.from==='me'?'гость':(c.who||'она')+(BY[m.by]?' · '+BY[m.by]:''))+' · '+new Date(m.at).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})});
+    $('admLog').scrollTop=1e6;
+  }
+  async function admWrite(patch){
+    if(!admSel||admBusy)return false;admBusy=true;
+    try{const cur=admState||{msgs:[],manual:false};await DB.doc('chats/'+admSel+'/admin/state').set({msgs:cur.msgs||[],manual:!!cur.manual,typing:false,at:cur.at||Date.now(),...patch});admBusy=false;return true}
+    catch(e){admBusy=false;toast('Не удалось сохранить. Попробуй ещё раз');return false}
+  }
+  $('admList').addEventListener('click',e=>{const b=e.target.closest('.adm-item');if(b)selectChat(b.dataset.id)});
+  $('admBack').addEventListener('click',()=>{$('admin').classList.remove('has-sel')});
+  $('admManual').addEventListener('change',e=>admWrite({manual:e.target.checked}).then(ok=>{if(ok)toast(e.target.checked?'ИИ выключен: в этом чате отвечаешь только ты':'ИИ снова отвечает сам')}));
+  $('admInput').addEventListener('input',()=>{if(!admTypingSent&&$('admInput').value.trim()){admTypingSent=true;admWrite({typing:true})}});
+  $('admForm').addEventListener('submit',async e=>{e.preventDefault();const v=$('admInput').value.trim();if(!v||!admSel)return;
+    const cur=admState||{msgs:[]};const ok=await admWrite({msgs:[...(cur.msgs||[]),{id:rid(),text:v.slice(0,600),at:Date.now()}].slice(-80),typing:false});
+    if(ok){$('admInput').value='';admTypingSent=false}});
+  $('admExit').addEventListener('click',()=>{location.hash='';route()});
+  $('admLogout').addEventListener('click',()=>{if(window.__fb){window.__fb.logout();isOwnerV=false;admStarted=false}unlocked=false;try{sessionStorage.removeItem('adm-ok')}catch(_){}route()});
+  $('adminBtn').addEventListener('click',()=>{location.hash='admin';route()});
+  window.addEventListener('hashchange',route);
+
+  (async()=>{
+    try{if(window.claude&&claude.use){[USER,DB]=await Promise.all([claude.use('user'),claude.use('db')])}}catch(e){}
+    if(USER){isOwnerV=await USER.isOwner();myId=await USER.id()}
+    if(USER&&DB&&myId){const w=await USER.can('data.write');if(w===false){DB=null}}
+    if(!myId)DB=isOwnerV?DB:null;
+    $('adminBtn').hidden=!isOwnerV;
+    if(DB&&myId)listenAdmin();
+    route();
+  })();
+
+  function sReset(){if(typeof aiCtl!=='undefined'&&aiCtl)aiCtl.abort();chatP=null;deck=shuffle(PROFILES);di=0;pLiked=[];$('likesRow').innerHTML='';$('swipe').hidden=false;$('match').hidden=true;sShow()}
+  $('pqAgain').addEventListener('click',()=>{sReset();$('para').scrollIntoView({behavior:'smooth'})});
+  $('pqToBuilder').addEventListener('click',()=>{look={...matchLook};draw();$('obraz').scrollIntoView({behavior:'smooth'});toast('Образ открыт в конструкторе')});
+  $('pqCopy').addEventListener('click',()=>{try{navigator.clipboard.writeText(lastText).then(()=>toast('Результат скопирован'),()=>toast(lastText))}catch(e){toast(lastText)}});
+  sReset();
+
+  /* ---------- sort game ---------- */
+  const SORT=[['Бежевый свитер','s'],['Энергетик','d'],['Плед в клетку','s'],['Цепочки','d'],['Кружка с сердечком','s'],['Подводка стрелками','d'],['Гирлянда в темноте','d'],['Книжка с закладкой','s'],['Чёрные карго','d'],['Юбка в клетку','s'],['Массивные ботинки','d'],['Ромашковый чай','s'],['Ночной концерт','d'],['Подъём в 7 утра','s'],['Конспекты с маркерами','s'],['Чёрный лак','d'],['Кожанка','d'],['Хвостик с бантиком','s'],['Селфи в лифте ночью','d'],['Пирог по маминому рецепту','s'],['Наушники на полную','d'],['Утренняя пробежка','s'],['Кольца на каждом пальце','d'],['Очки в тонкой оправе','s'],['Свечи и сериал','s'],['Рюкзак с нашивками','d']];
+  let sg=null,sBest=store.get('sort-best',0);$('sBest').textContent=sBest;
+  function sNext(){let it;do{it=SORT[Math.floor(Math.random()*SORT.length)]}while(sg.cur&&it[0]===sg.cur[0]);sg.cur=it;$('sCard').textContent=it[0];$('sCard').className='sortcard'}
+  function sAnswer(k){
+    if(!sg)return;const ok=sg.cur[1]===k;
+    if(ok){sg.streak++;sg.score+=1+(sg.streak%5===0?2:0);if(sg.streak%5===0)toast('Серия ×5! +2 бонус')}else{sg.streak=0;sg.score=Math.max(0,sg.score-1)}
+    $('sScore').textContent=sg.score;$('sStreak').textContent=sg.streak;
+    $('sCard').className='sortcard '+(ok?'ok':'no');setTimeout(()=>{if(sg)sNext()},180);
+  }
+  function sStart(){
+    sg={score:0,streak:0,cur:null,end:Date.now()+30000};$('sScore').textContent=0;$('sStreak').textContent=0;
+    $('sS').disabled=$('sD').disabled=false;$('sStart').hidden=true;sNext();
+    sg.timer=setInterval(()=>{const left=Math.max(0,Math.ceil((sg.end-Date.now())/1000));$('sTime').textContent=left;if(left<=0)sEnd()},200);
+  }
+  function sEnd(){
+    clearInterval(sg.timer);const s=sg.score;sg=null;$('sS').disabled=$('sD').disabled=true;$('sStart').hidden=false;$('sStart').textContent='Ещё раз';
+    $('sCard').className='sortcard';$('sCard').textContent=s>=25?'Эксперт по эстетикам: '+s:s>=15?'Отличный вайб-радар: '+s:'Очки: '+s+'. Попробуй ещё';
+    if(s>sBest){sBest=s;store.set('sort-best',s);$('sBest').textContent=s;toast('Новый рекорд сортировки!')}
+  }
+  $('sStart').addEventListener('click',sStart);$('sS').addEventListener('click',()=>sAnswer('s'));$('sD').addEventListener('click',()=>sAnswer('d'));
+  window.addEventListener('keydown',e=>{if(!sg)return;if(e.key==='ArrowLeft'){e.preventDefault();sAnswer('s')}if(e.key==='ArrowRight'){e.preventDefault();sAnswer('d')}});
+
+  /* ---------- reaction game ---------- */
+  const R=$('react');let rs='idle',rT=0,rTimer=0,rTimes=[],rBest=store.get('react-best',null);
+  function rFmt(ms){return Math.round(ms)+' мс'}
+  $('rBest').textContent=rBest?rFmt(rBest):'—';
+  function rRounds(){$('rRounds').innerHTML=[0,1,2,3,4].map(i=>`<span>${rTimes[i]?rFmt(rTimes[i]):'·'}</span>`).join('')}
+  function rWait(){rs='wait';R.className='react';$('rBig').textContent='серьёзка';$('rSmall').textContent='Жди щелчка…';
+    rTimer=setTimeout(()=>{rs='go';rT=performance.now();R.className='react go';$('rBig').textContent='ЩЁЛК!';$('rSmall').textContent='Жми!'},1200+Math.random()*2800)}
+  function rPress(){
+    if(rs==='idle'||rs==='done'){rTimes=[];rRounds();$('rAvg').textContent='—';$('rVerdict').textContent='';rWait();return}
+    if(rs==='wait'){clearTimeout(rTimer);rs='early';R.className='react early';$('rBig').textContent='Рано!';$('rSmall').textContent='Переход ещё не начался. Нажми, чтобы повторить';return}
+    if(rs==='early'){rWait();return}
+    if(rs==='go'){
+      const t=performance.now()-rT;rTimes.push(t);rRounds();
+      if(rTimes.length<5){rs='between';R.className='react';$('rBig').textContent=rFmt(t);$('rSmall').textContent='Нажми для следующей попытки';return}
+      const avg=rTimes.reduce((a,b)=>a+b,0)/5;rs='done';R.className='react go';$('rBig').textContent=rFmt(avg);$('rSmall').textContent='Среднее. Нажми, чтобы сыграть снова';
+      $('rAvg').textContent=rFmt(avg);
+      $('rVerdict').textContent=avg<250?'Монтажёр от бога: переход идеально в такт':avg<350?'Переход что надо, можно выкладывать':avg<500?'Чуть-чуть не в такт, но зрители не заметят':'Видео уже залито, а ты всё ещё ждёшь щелчка';
+      if(!rBest||avg<rBest){rBest=avg;store.set('react-best',avg);$('rBest').textContent=rFmt(avg);toast('Новый рекорд реакции!')}
+      return}
+    if(rs==='between')rWait();
+  }
+  R.addEventListener('click',rPress);
+  rRounds();
+})();
+</script>
+</body>
+</html>

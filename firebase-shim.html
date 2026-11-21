@@ -1,0 +1,40 @@
+<script src="firebase-config.js"></script>
+<script>
+// Gives the page the same small db/user API it uses on claude.ai, backed by Firebase.
+(function(){
+  var done;var ready=new Promise(function(r){done=r});window.__fbReady=done;
+  window.claude={use:function(n){return ready.then(function(fb){if(!fb)return null;return n==='db'?fb.db:n==='user'?fb.user:null})}};
+  window.__fb={login:function(e,p){return ready.then(function(fb){return fb?fb.login(e,p):false})},logout:function(){return ready.then(function(fb){return fb&&fb.logout()})}};
+  if(!window.FIREBASE_CONFIG||!window.FIREBASE_CONFIG.apiKey||window.FIREBASE_CONFIG.apiKey.indexOf('ВСТАВЬ')===0){done(null);window.__fb=undefined}
+})();
+</script>
+<script type="module">
+if(window.__fb){
+  const V='10.12.2',B='https://www.gstatic.com/firebasejs/'+V+'/';
+  try{
+    const {initializeApp}=await import(B+'firebase-app.js');
+    const A=await import(B+'firebase-auth.js');
+    const F=await import(B+'firebase-firestore.js');
+    const app=initializeApp(window.FIREBASE_CONFIG);
+    const auth=A.getAuth(app),fs=F.getFirestore(app);
+    await new Promise(r=>{const u=A.onAuthStateChanged(auth,()=>{u();r()})});
+    if(!auth.currentUser)await A.signInAnonymously(auth);
+    const wrap=s=>({id:s.id,exists:s.exists(),data:()=>s.data(),metadata:{fromCache:s.metadata.fromCache,hasPendingWrites:s.metadata.hasPendingWrites}});
+    const docRef=path=>{const r=F.doc(fs,path);return{id:r.id,path,
+      get:async()=>wrap(await F.getDoc(r)),set:d=>F.setDoc(r,d),update:d=>F.updateDoc(r,d),delete:()=>F.deleteDoc(r),
+      onSnapshot:(n,e)=>F.onSnapshot(r,s=>n(wrap(s)),err=>e&&e({code:'unavailable',message:String(err)})),
+      collection:c=>collRef(path+'/'+c)}};
+    const collRef=(path,cons=[])=>({path,
+      orderBy:(f,dir)=>collRef(path,[...cons,F.orderBy(f,dir||'asc')]),
+      limit:n=>collRef(path,[...cons,F.limit(n)]),
+      where:(f,op,v)=>collRef(path,[...cons,F.where(f,op,v)]),
+      doc:id=>docRef(path+'/'+id),
+      get:async()=>{const q=await F.getDocs(F.query(F.collection(fs,path),...cons));return{docs:q.docs.map(wrap),size:q.size,empty:q.empty,docChanges:()=>[],metadata:{fromCache:false,hasPendingWrites:false}}},
+      onSnapshot:(n,e)=>F.onSnapshot(F.query(F.collection(fs,path),...cons),q=>n({docs:q.docs.map(wrap),size:q.size,empty:q.empty,docChanges:()=>[],metadata:{fromCache:q.metadata.fromCache,hasPendingWrites:q.metadata.hasPendingWrites}}),err=>e&&e({code:'unavailable',message:String(err)}))});
+    const user={isOwner:async()=>!!auth.currentUser&&auth.currentUser.uid===window.ADMIN_UID,id:async()=>auth.currentUser?auth.currentUser.uid:null,can:async()=>true,canEdit:async()=>false};
+    window.__fbReady({db:{doc:docRef,collection:p=>collRef(p)},user,
+      login:async(e,p)=>{const c=await A.signInWithEmailAndPassword(auth,e,p);return c.user.uid===window.ADMIN_UID},
+      logout:async()=>{await A.signOut(auth);await A.signInAnonymously(auth)}});
+  }catch(err){console.error('Firebase не запустился',err);window.__fbReady(null)}
+}
+</script>

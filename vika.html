@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Весёлый сайт про грязнулек-нерях: Вика и её хаос, пять игр, большой тест с рейтингом, чек-лист и правила порядка.">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Грязнульки</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik+Wet+Paint&family=Nunito:wght@400;700;900&display=swap">
+<style>
+/* Layout: one column of "puddles"; mud on top, foam and bubbles as you scroll toward clean */
+:root{
+  --bg:#f3ede2; --fg:#2e2218; --mud:#6b4a2b; --mud-soft:#a07a52; --soap:#2f97c9; --foam:#ffffff; --card:#fffaf2; --muted:#6f5d4b; --line:#e2d6c4; --good:#3f8f4e; --bad:#c0442f;
+  --display:"Rubik Wet Paint","Comic Sans MS",cursive;
+  --body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1d1611; --fg:#f1e6d8; --mud:#c08a55; --mud-soft:#8a6744; --soap:#6cc6f0; --foam:#2a2119; --card:#271e17; --muted:#b9a690; --line:#3a2e24; --good:#7cc98a; --bad:#ef8a75; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1d1611; --fg:#f1e6d8; --mud:#c08a55; --mud-soft:#8a6744; --soap:#6cc6f0; --foam:#2a2119; --card:#271e17; --muted:#b9a690; --line:#3a2e24; --good:#7cc98a; --bad:#ef8a75; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.6}
+.wrap{max-width:900px;margin:0 auto;padding-block:24px 64px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:72px}
+h1,h2{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0;color:var(--mud);line-height:1.05}
+h1{font-size:clamp(56px,13vw,120px)}
+h2{font-size:clamp(34px,6vw,52px)}
+h3{margin:0;font-size:19px}
+p{margin:0;max-width:62ch}
+.lead{font-size:20px}
+.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:13px;font-weight:900;color:var(--soap)}
+section{display:flex;flex-direction:column;gap:24px;scroll-margin-top:72px}
+.muted{color:var(--muted)}
+
+nav.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:2px dashed var(--line);
+  padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:21;background:var(--bg)}
+nav.top ul{max-width:900px;margin:0 auto;padding:0;list-style:none;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+nav.top a{display:block;white-space:nowrap;text-decoration:none;color:var(--fg);font-weight:700;font-size:15px;padding:6px 12px;border-radius:999px}
+nav.top a:hover{background:var(--card);color:var(--mud)}
+nav.top a:focus-visible{outline:3px solid var(--soap)}
+
+header{display:flex;flex-direction:column;gap:16px}
+.fact{display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--card);border-radius:18px;padding:14px 18px}
+.fact p{flex:1 1 260px;min-width:0}
+
+button.btn{font:inherit;font-weight:900;background:var(--mud);color:var(--bg);border:0;border-radius:999px;padding:11px 22px;cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--mud);box-shadow:inset 0 0 0 2px var(--mud)}
+button.btn.soap{background:var(--soap);color:var(--bg)}
+button.btn:hover{filter:brightness(1.1)}
+button:focus-visible,input:focus-visible,label:focus-within{outline:3px solid var(--soap);outline-offset:3px}
+button:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* wash game */
+.game{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:32px;align-items:center}
+@media (max-width:680px){.game{grid-template-columns:1fr}}
+.stage{position:relative;aspect-ratio:1;width:100%;max-width:440px;justify-self:center;background:var(--card);border-radius:50% 46% 52% 44%/48% 52% 46% 50%;overflow:hidden;user-select:none;touch-action:none;cursor:none}
+.stage svg.kid{position:absolute;inset:8%;width:84%;height:84%;pointer-events:none}
+.spot{position:absolute;background:var(--mud-soft);border:0;padding:0;cursor:none;
+  border-radius:58% 42% 50% 50%/50% 60% 40% 50%;transition:opacity .15s,transform .35s}
+.spot.gone{transform:scale(0)!important;opacity:0!important;pointer-events:none}
+.sponge{position:absolute;width:54px;height:38px;border-radius:10px;background:#f6d64a;box-shadow:inset 0 -10px 0 #7cbf5a;pointer-events:none;transform:translate(-50%,-50%) rotate(-12deg);opacity:0;transition:opacity .2s;z-index:3}
+.stage:hover .sponge,.stage.scrubbing .sponge{opacity:1}
+.bubble{position:absolute;border:2px solid var(--soap);border-radius:50%;pointer-events:none;animation:rise 1s ease-out forwards;z-index:2}
+@keyframes rise{from{transform:translateY(0) scale(.4);opacity:1}to{transform:translateY(-60px) scale(1.2);opacity:0}}
+.meter{height:14px;background:var(--card);border-radius:7px;overflow:hidden;border:2px solid var(--mud-soft)}
+.meter i{display:block;height:100%;width:0;background:var(--soap);transition:width .2s}
+.gamecopy{display:flex;flex-direction:column;gap:16px;min-width:0}
+.status{font-weight:900;font-size:20px;font-variant-numeric:tabular-nums}
+.chars{display:flex;gap:8px;flex-wrap:wrap}
+.chars button{font:inherit;font-weight:700;border:2px solid var(--line);background:var(--card);color:var(--fg);border-radius:999px;padding:6px 14px;cursor:pointer}
+.chars button[aria-pressed="true"]{border-color:var(--soap);color:var(--soap)}
+.stats{display:flex;gap:20px;font-variant-numeric:tabular-nums;flex-wrap:wrap}
+.stats div{display:flex;flex-direction:column}
+.stats b{font-size:24px}
+.stats span{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+
+/* catch game */
+.catch{display:flex;flex-direction:column;gap:14px}
+.canvasbox{position:relative;width:100%;aspect-ratio:16/10;max-width:100%;border-radius:22px;overflow:hidden;background:var(--card);border:2px solid var(--line);touch-action:none}
+.canvasbox canvas{display:block;width:100%;height:100%}
+.overlay{position:absolute;inset:0;display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;text-align:center;padding:16px;background:color-mix(in srgb,var(--card) 82%,transparent)}
+.overlay p{max-width:40ch}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:15px}
+.legend span{display:flex;gap:8px;align-items:center}
+.legend i{width:16px;height:16px;border-radius:50%;display:inline-block}
+
+/* hand timer */
+.timer{display:grid;grid-template-columns:auto minmax(0,1fr);gap:32px;align-items:center}
+@media (max-width:600px){.timer{grid-template-columns:1fr;justify-items:center;text-align:center}}
+.ring{width:200px;height:200px;max-width:100%}
+.ring text{font-family:var(--display);fill:var(--mud)}
+.steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.steps li{padding:6px 12px;border-radius:10px;color:var(--muted)}
+.steps li.on{background:var(--card);color:var(--fg);font-weight:900}
+.steps li.done{color:var(--good)}
+.steps li.done::after{content:" ✓"}
+
+/* types */
+.types{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.type{font:inherit;color:inherit;text-align:left;background:var(--card);border:2px solid transparent;padding:20px;border-radius:18px;display:flex;flex-direction:column;gap:8px;min-width:0;cursor:pointer}
+.type:hover{border-color:var(--line)}
+.type .lvl{font-size:13px;color:var(--muted);font-weight:700}
+.type .how{color:var(--soap);font-weight:700}
+.type .hint{font-size:13px;color:var(--muted);margin-top:auto}
+
+/* checklist */
+.check{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;align-items:start}
+@media (max-width:600px){.check{grid-template-columns:1fr}}
+.checklist{display:flex;flex-direction:column;gap:8px}
+.checklist label{display:flex;gap:12px;align-items:center;background:var(--card);border-radius:14px;padding:12px 16px;cursor:pointer}
+.checklist input{width:22px;height:22px;accent-color:var(--soap);flex:none}
+.checklist input:checked + span{text-decoration:line-through;color:var(--muted)}
+.score{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--card);border-radius:22px;padding:20px 28px;text-align:center}
+.score b{font-family:var(--display);font-size:56px;color:var(--soap);line-height:1;font-weight:400;font-variant-numeric:tabular-nums}
+.stars{font-size:28px;letter-spacing:4px;color:var(--line)}
+.stars .lit{color:#e8b82a}
+
+/* rules */
+ol.rules{margin:0;padding:0;list-style:none;counter-reset:r;display:flex;flex-direction:column;gap:14px}
+ol.rules li{counter-increment:r;display:grid;grid-template-columns:48px 1fr;gap:14px;align-items:start}
+ol.rules li::before{content:counter(r);font-family:var(--display);font-size:34px;color:var(--soap);line-height:1}
+
+/* quiz */
+.quiz{display:flex;flex-direction:column;gap:22px}
+.q{display:flex;flex-direction:column;gap:8px}
+.q label{display:flex;gap:10px;align-items:center;cursor:pointer}
+.q legend{font-weight:900;margin-bottom:6px}
+fieldset{border:0;padding:0;margin:0}
+.result{background:var(--card);border-radius:18px;padding:20px;font-size:18px}
+.quiz .btn{align-self:flex-start}
+
+/* big quiz */
+a.btn{display:inline-block;text-decoration:none}
+.linkbtn{font:inherit;background:none;border:0;color:var(--soap);font-weight:700;cursor:pointer;padding:0}
+.qz{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:28px;align-items:start;background:var(--card);border-radius:26px;padding:24px}
+@media (max-width:680px){.qz{grid-template-columns:1fr}.qz-side{order:-1;flex-direction:row!important;align-items:center}.qz-face{width:90px!important}}
+.qz-main{display:flex;flex-direction:column;gap:16px;min-width:0}
+.qz-top{display:flex;justify-content:space-between;color:var(--muted);font-weight:700;font-size:15px}
+.qz-prog{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.qz-prog i{display:block;height:100%;width:0;background:var(--mud);transition:width .3s}
+.qz-q{font-size:clamp(21px,3.6vw,26px);font-weight:900;line-height:1.3;text-wrap:balance}
+.qz-answers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:520px){.qz-answers{grid-template-columns:1fr}}
+.qz-answers button{font:inherit;text-align:left;background:var(--bg);color:var(--fg);border:2px solid var(--line);border-radius:16px;padding:14px 16px;cursor:pointer;transition:transform .15s,border-color .15s}
+.qz-answers button:hover{border-color:var(--mud-soft);transform:translateY(-2px)}
+.qz-answers button.picked{border-color:var(--mud);background:var(--mud);color:var(--bg)}
+.qz-react{min-height:1.6em;color:var(--soap);font-weight:700}
+.qz-side{display:flex;flex-direction:column;gap:12px;align-items:center}
+.qz-face{width:100%;max-width:200px}
+.qz-face .m{transition:opacity .4s}
+.qz-meter{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:13px;color:var(--muted);font-weight:700;width:100%}
+.qz-meter div{width:100%;height:12px;border-radius:6px;background:var(--line);overflow:hidden}
+.qz-meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--soap),var(--mud));transition:width .4s}
+.qz-result{display:flex;flex-direction:column;gap:20px;background:var(--card);border-radius:26px;padding:28px}
+.qz-title{font-family:var(--display);font-weight:400;font-size:clamp(40px,8vw,68px);color:var(--mud);line-height:1}
+.scale{display:flex;flex-direction:column;gap:14px}
+.scale-bar{position:relative;height:22px;border-radius:11px;background:linear-gradient(90deg,var(--soap),#9bc7a2 35%,#c9a46e 65%,var(--mud));margin-top:34px}
+.scale-mark{position:absolute;top:-8px;width:6px;height:38px;border-radius:3px;background:var(--fg);transform:translateX(-50%);transition:left 1.2s cubic-bezier(.2,.8,.2,1)}
+.scale-mark span{position:absolute;bottom:42px;left:50%;transform:translateX(-50%);background:var(--fg);color:var(--bg);font-size:13px;font-weight:900;padding:2px 8px;border-radius:8px;white-space:nowrap}
+.scale-levels{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+@media (max-width:640px){.scale-levels{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.scale-levels li{border-radius:12px;padding:8px 10px;font-size:14px;line-height:1.3;color:var(--muted);border:2px solid var(--line);display:flex;flex-direction:column;gap:2px}
+.scale-levels li small{font-size:12px;font-variant-numeric:tabular-nums}
+.scale-levels li.me{border-color:var(--mud);color:var(--fg);font-weight:900;background:var(--bg)}
+.qz-tips ul{margin:8px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+
+/* memory */
+.memo{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;max-width:480px;width:100%}
+.mcard{aspect-ratio:1;max-width:100%;border:0;border-radius:16px;font-size:clamp(28px,8vw,44px);cursor:pointer;background:var(--mud);color:var(--bg);font-family:var(--display);transition:transform .25s,background .25s}
+.mcard.open,.mcard.found{background:var(--card);box-shadow:inset 0 0 0 2px var(--line);transform:rotateY(180deg)}
+.mcard.open span,.mcard.found span{display:inline-block;transform:rotateY(180deg)}
+.mcard.found{box-shadow:inset 0 0 0 3px var(--good);cursor:default}
+.memowrap{display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:680px){.memowrap{grid-template-columns:1fr}}
+
+/* true/false */
+.tf{background:var(--card);border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:16px;max-width:640px}
+.tf .claim{font-size:22px;font-weight:900;line-height:1.35}
+.tf .explain{padding:12px 16px;border-radius:12px;border-left:5px solid var(--good);background:var(--bg)}
+.tf .explain.wrong{border-left-color:var(--bad)}
+.tf .prog{display:flex;gap:6px}
+.tf .prog i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.tf .prog i.ok{background:var(--good)}.tf .prog i.no{background:var(--bad)}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(120px);background:var(--mud);color:var(--bg);font-weight:900;padding:12px 22px;border-radius:999px;transition:transform .3s;z-index:30;max-width:calc(100% - 32px);text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+footer{color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.spot,.meter i,.toast{transition:none}.bubble{display:none}}
+</style>
+</head>
+<body>
+
+<nav class="top" aria-label="Разделы">
+  <ul>
+    <li><a href="#otmyvalka">Отмывалка</a></li>
+    <li><a href="#lovilka">Ловилка</a></li>
+    <li><a href="#puzyri">Пузыри</a></li>
+    <li><a href="#pary">Найди пару</a></li>
+    <li><a href="#pravda">Правда или выдумка</a></li>
+    <li><a href="#ruki">Моем руки</a></li>
+    <li><a href="#vidy">Виды грязи</a></li>
+    <li><a href="#chistyulya">Чек-лист</a></li>
+    <li><a href="#pravila">Правила</a></li>
+    <li><a href="#test">Тест</a></li>
+  </ul>
+</nav>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Энциклопедия неряшек</span>
+    <h1>Грязнульки</h1>
+    <p class="lead">В разговорной речи грязнулька — это неряха: девушка, у которой посуда копится в раковине неделю, а чистые вещи живут на стуле. Знакомься, это Вика. Ей 24, она прекрасна, и у неё дома полный хаос. Отмой Вику и её друзей, сыграй в игры и узнай, насколько грязнулька ты сама.</p>
+    <div class="fact">
+      <p id="fact" aria-live="polite">В одной столовой ложке садовой земли живёт больше микробов, чем людей на Земле.</p>
+      <button class="btn ghost" id="factBtn" type="button">Ещё факт</button>
+    </div>
+  </header>
+
+  <section class="game" id="otmyvalka" aria-labelledby="g-h">
+    <div class="stage" id="stage" aria-label="Чумазый грязнулька. Три пятна губкой или нажимай на них">
+      <svg class="kid" id="kid" viewBox="0 0 200 200" aria-hidden="true"></svg>
+      <div class="sponge" id="sponge"></div>
+    </div>
+    <div class="gamecopy">
+      <span class="eyebrow">Игра 1 · Отмывалка</span>
+      <h2 id="g-h">Отмой <span id="who">Вику</span></h2>
+      <p>Зажми мышку или палец и три пятна губкой. Можно и просто нажимать. Время пойдёт с первого движения.</p>
+      <div class="chars" role="group" aria-label="Кого отмываем">
+        <button type="button" data-char="vika" aria-pressed="true">Вика</button>
+        <button type="button" data-char="ira" aria-pressed="false">Подруга Ира</button>
+        <button type="button" data-char="pelmen" aria-pressed="false">Кот Пельмень</button>
+      </div>
+      <div class="meter" aria-hidden="true"><i id="bar"></i></div>
+      <div class="status" id="status" aria-live="polite">Чистота: 0%</div>
+      <div class="stats">
+        <div><b id="time">0,0 с</b><span>Время</span></div>
+        <div><b id="best">—</b><span>Рекорд</span></div>
+      </div>
+      <div class="row"><button class="btn" id="again" type="button">Испачкать заново</button></div>
+    </div>
+  </section>
+
+  <section class="catch" id="lovilka" aria-labelledby="c-h">
+    <span class="eyebrow">Игра 2 · Ловилка</span>
+    <h2 id="c-h">Поймай мыло</h2>
+    <p>Двигай ванну мышкой, пальцем или стрелками. Лови мыло и уточек, а от комков грязи уворачивайся. Три комка в ванне, и игра окончена.</p>
+    <div class="legend">
+      <span><i style="background:var(--soap)"></i>Мыло: +1</span>
+      <span><i style="background:#f2c230"></i>Уточка: +3</span>
+      <span><i style="background:var(--mud)"></i>Грязь: минус жизнь</span>
+    </div>
+    <div class="canvasbox" id="cbox">
+      <canvas id="cv" aria-label="Игровое поле ловилки"></canvas>
+      <div class="overlay" id="cover">
+        <h3 id="coverTitle">Готов к ванне?</h3>
+        <p id="coverText">Рекорд: <span id="cbest">0</span></p>
+        <button class="btn soap" id="cstart" type="button">Начать</button>
+      </div>
+    </div>
+    <div class="stats">
+      <div><b id="cscore">0</b><span>Очки</span></div>
+      <div><b id="clives">♥♥♥</b><span>Жизни</span></div>
+    </div>
+  </section>
+
+  <section class="catch" id="puzyri" aria-labelledby="b-h">
+    <span class="eyebrow">Игра 3 · Пузыри</span>
+    <h2 id="b-h">Лопни пузыри</h2>
+    <p>У тебя 30 секунд. Лопай мыльные пузыри мышкой или пальцем. Маленькие дают больше очков. Коричневые пузыри из лужи не трогай: они отнимают 3 очка.</p>
+    <div class="legend">
+      <span><i style="background:var(--soap)"></i>Большой: +1</span>
+      <span><i style="background:var(--soap);width:10px;height:10px"></i>Маленький: +2</span>
+      <span><i style="background:var(--mud)"></i>Грязевой: −3</span>
+    </div>
+    <div class="canvasbox" id="bbox">
+      <canvas id="bcv" aria-label="Игровое поле с пузырями"></canvas>
+      <div class="overlay" id="bcover">
+        <h3 id="bTitle">Полная ванна пены</h3>
+        <p id="bText">Рекорд: <span id="bbest">0</span></p>
+        <button class="btn soap" id="bstart" type="button">Начать</button>
+      </div>
+    </div>
+    <div class="stats">
+      <div><b id="bscore">0</b><span>Очки</span></div>
+      <div><b id="btime">30</b><span>Секунды</span></div>
+    </div>
+  </section>
+
+  <section id="pary" aria-labelledby="m-h">
+    <span class="eyebrow">Игра 4 · Память</span>
+    <h2 id="m-h">Найди пару</h2>
+    <div class="memowrap">
+      <div class="memo" id="memo" role="grid" aria-label="Карточки"></div>
+      <div class="gamecopy">
+        <p>Под карточками спрятаны вещи из ванной. Открывай по две и ищи одинаковые. Чем меньше ходов, тем лучше.</p>
+        <div class="stats">
+          <div><b id="mmoves">0</b><span>Ходы</span></div>
+          <div><b id="mpairs">0 / 8</b><span>Пары</span></div>
+          <div><b id="mbest">—</b><span>Рекорд</span></div>
+        </div>
+        <div class="row"><button class="btn" id="mnew" type="button">Перемешать</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pravda" aria-labelledby="p-h">
+    <span class="eyebrow">Игра 5 · Викторина</span>
+    <h2 id="p-h">Правда или выдумка</h2>
+    <div class="tf" id="tf" aria-live="polite">
+      <div class="prog" id="tfprog"></div>
+      <span class="muted" id="tfnum"></span>
+      <p class="claim" id="tfclaim"></p>
+      <div class="row" id="tfbtns">
+        <button class="btn soap" type="button" data-a="1">Правда</button>
+        <button class="btn" type="button" data-a="0">Выдумка</button>
+      </div>
+      <p class="explain" id="tfexp" hidden></p>
+      <div class="row"><button class="btn ghost" id="tfnext" type="button" hidden>Дальше</button></div>
+    </div>
+  </section>
+
+  <section id="ruki" aria-labelledby="h-h">
+    <span class="eyebrow">Тренажёр</span>
+    <h2 id="h-h">Моем руки 20 секунд</h2>
+    <div class="timer">
+      <svg class="ring" viewBox="0 0 200 200" aria-hidden="true">
+        <circle cx="100" cy="100" r="84" fill="none" stroke="var(--line)" stroke-width="16"/>
+        <circle id="arc" cx="100" cy="100" r="84" fill="none" stroke="var(--soap)" stroke-width="16" stroke-linecap="round" transform="rotate(-90 100 100)" stroke-dasharray="527.8" stroke-dashoffset="527.8"/>
+        <text id="secs" x="100" y="118" text-anchor="middle" font-size="56">20</text>
+      </svg>
+      <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+        <ol class="steps" id="steps">
+          <li>Ладонь о ладонь</li>
+          <li>Тыльная сторона рук</li>
+          <li>Между пальцами</li>
+          <li>Большие пальцы</li>
+          <li>Ногти и кончики пальцев</li>
+        </ol>
+        <div class="row"><button class="btn soap" id="hstart" type="button">Включить воду</button><span class="muted" id="hcount" aria-live="polite"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="vidy" aria-labelledby="t-h">
+    <h2 id="t-h">Виды грязи</h2>
+    <p class="muted">Нажми на карточку, чтобы узнать, как это отмыть.</p>
+    <div class="types" id="types"></div>
+  </section>
+
+  <section id="chistyulya" aria-labelledby="k-h">
+    <span class="eyebrow">На сегодня</span>
+    <h2 id="k-h">Чек-лист чистюли</h2>
+    <div class="check">
+      <div class="checklist" id="checklist"></div>
+      <div class="score">
+        <b id="kpct">0%</b>
+        <div class="stars" id="kstars" aria-hidden="true"><span>★</span><span>★</span><span>★</span></div>
+        <span class="muted" id="ktext">Начни с утренних дел</span>
+        <button class="btn ghost" id="kreset" type="button">Сбросить</button>
+      </div>
+    </div>
+    <p class="muted">Отметки запоминаются в этом браузере до конца дня.</p>
+  </section>
+
+  <section id="pravila" aria-labelledby="r-h">
+    <h2 id="r-h">Как перестать быть грязнулькой</h2>
+    <ol class="rules">
+      <li><p><b>Посуду моют сразу.</b> Одна тарелка после ужина — минута. Гора к пятнице — весь вечер.</p></li>
+      <li><p><b>Правило одной минуты.</b> Если дело занимает меньше минуты, сделай его сразу: повесь куртку, выкинь фантик, закрой крем.</p></li>
+      <li><p><b>Стул — не шкаф.</b> Вещь либо чистая и в шкафу, либо ношеная и в корзине. Третьего не дано.</p></li>
+      <li><p><b>Макияж смывают каждый вечер.</b> Даже в три часа ночи. Подушка — не косметичка.</p></li>
+      <li><p><b>Мусор выносят по пути.</b> Выходишь из дома — захвати пакет.</p></li>
+    </ol>
+  </section>
+
+  <section id="test" aria-labelledby="q-h">
+    <span class="eyebrow">Большой тест</span>
+    <h2 id="q-h">Насколько ты грязнулька?</h2>
+    <p>Двенадцать вопросов из обычной жизни: посуда, макияж, холодильник и стул с одеждой. Отвечай честно: Вика справа пачкается с каждым ответом, а в конце ты увидишь своё место на шкале от сверкающей чистюльки до великой грязнульки.</p>
+    <div class="qz" id="qz">
+      <div class="qz-main" id="qzMain">
+        <div class="qz-top"><span id="qzNum">Вопрос 1 из 12</span><button type="button" class="linkbtn" id="qzBack" hidden>← Назад</button></div>
+        <div class="qz-prog"><i id="qzBar"></i></div>
+        <p class="qz-q" id="qzQ"></p>
+        <div class="qz-answers" id="qzA"></div>
+        <p class="qz-react" id="qzReact" aria-live="polite"></p>
+      </div>
+      <div class="qz-side">
+        <svg class="qz-face" id="qzFace" viewBox="0 0 200 200" aria-hidden="true">
+          <path d="M28 120 Q20 40 100 34 Q180 40 172 120 Q176 170 150 186 L50 186 Q24 170 28 120Z" fill="#5a3420"/>
+          <circle cx="100" cy="30" r="24" fill="#5a3420"/>
+          <line x1="82" y1="10" x2="120" y2="46" stroke="#f2c230" stroke-width="5" stroke-linecap="round"/>
+          <ellipse cx="100" cy="112" rx="64" ry="72" fill="#f4c9a0"/>
+          <path d="M38 94 Q50 44 100 46 Q150 44 162 94 Q130 64 96 72 Q64 66 38 94Z" fill="#5a3420"/>
+          <circle cx="38" cy="126" r="8" fill="none" stroke="#e8b82a" stroke-width="3"/><circle cx="162" cy="126" r="8" fill="none" stroke="#e8b82a" stroke-width="3"/>
+          <circle cx="72" cy="100" r="9" fill="#2e2218"/><circle cx="128" cy="100" r="9" fill="#2e2218"/>
+          <circle cx="75" cy="97" r="3" fill="#fff"/><circle cx="131" cy="97" r="3" fill="#fff"/>
+          <g id="qzMud"></g>
+          <path id="qzMouth" d="M74 134 Q100 164 126 134" stroke="#2e2218" stroke-width="5" fill="none" stroke-linecap="round"/>
+        </svg>
+        <div class="qz-meter"><span>Чисто</span><div><i id="qzMeter"></i></div><span>Грязно</span></div>
+      </div>
+    </div>
+    <div class="qz-result" id="qzRes" hidden>
+      <span class="eyebrow">Твой результат</span>
+      <h3 class="qz-title" id="qzTitle"></h3>
+      <p class="lead" id="qzDesc"></p>
+      <div class="scale">
+        <div class="scale-bar"><b class="scale-mark" id="qzMark"><span id="qzPct"></span></b></div>
+        <ol class="scale-levels" id="qzLevels"></ol>
+      </div>
+      <div class="qz-tips"><h3>Что делать дальше</h3><ul id="qzTips"></ul></div>
+      <div class="row">
+        <button class="btn" type="button" id="qzAgain">Пройти ещё раз</button>
+        <a class="btn ghost" href="#otmyvalka">Пойти отмываться</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>Ни одна грязнулька не пострадала. Вика всё отмыла и даже вынесла мусор.</footer>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}},
+               set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+  let toastT;
+  function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2600)}
+
+  /* ---------- facts ---------- */
+  const facts=[
+    'В одной столовой ложке садовой земли живёт больше микробов, чем людей на Земле.',
+    'Свиньи валяются в грязи не от неряшливости: так они спасаются от жары и насекомых.',
+    'Мыло люди варили ещё в Древнем Вавилоне, почти 5000 лет назад.',
+    'На смартфоне бывает больше микробов, чем на сиденье унитаза. Протирай его.',
+    'Под ногтями прячется больше всего микробов на руках. Поэтому ногти тоже трут.',
+    'Мыльный пузырь лопается, когда вода в его стенке испаряется и плёнка становится тоньше волоса.',
+    'Слоны поливают себя пылью и грязью, это их солнцезащитный крем.',
+    'Тёплая вода смывает жир лучше холодной, но главное в мытье рук — мыло и время.'];
+  let fi=0;
+  $('factBtn').addEventListener('click',()=>{fi=(fi+1+Math.floor(Math.random()*(facts.length-1)))%facts.length;$('fact').textContent=facts[fi]});
+
+  /* ---------- wash game ---------- */
+  const chars={
+    vika:{name:'Вику',done:'Вика сияет!',svg:`
+      <path d="M28 120 Q20 40 100 34 Q180 40 172 120 Q176 170 150 186 L50 186 Q24 170 28 120Z" fill="#5a3420"/>
+      <circle cx="100" cy="30" r="24" fill="#5a3420"/>
+      <line x1="82" y1="10" x2="120" y2="46" stroke="#f2c230" stroke-width="5" stroke-linecap="round"/>
+      <ellipse cx="100" cy="112" rx="64" ry="72" fill="#f4c9a0"/>
+      <path d="M38 94 Q50 44 100 46 Q150 44 162 94 Q130 64 96 72 Q64 66 38 94Z" fill="#5a3420"/>
+      <circle cx="38" cy="126" r="8" fill="none" stroke="#e8b82a" stroke-width="3"/><circle cx="162" cy="126" r="8" fill="none" stroke="#e8b82a" stroke-width="3"/>
+      <circle cx="74" cy="104" r="9" fill="#2e2218"/><circle cx="126" cy="104" r="9" fill="#2e2218"/>
+      <circle cx="77" cy="101" r="3" fill="#fff"/><circle cx="129" cy="101" r="3" fill="#fff"/>
+      <path d="M62 96 L57 89 M68 93 L66 86 M138 96 L143 89 M132 93 L134 86" stroke="#2e2218" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="60" cy="132" r="10" fill="#f19a8a" opacity=".55"/><circle cx="140" cy="132" r="10" fill="#f19a8a" opacity=".55"/>`,
+      spots:[[22,30,18],[60,24,14],[30,58,16],[66,56,20],[46,74,15],[16,46,11],[74,38,12],[50,44,10],[38,20,9]]},
+    ira:{name:'Иру',done:'Ира блестит!',svg:`
+      <path d="M32 100 Q28 36 100 34 Q172 36 168 100 L172 190 L28 190Z" fill="#e2b85c"/>
+      <ellipse cx="100" cy="112" rx="62" ry="70" fill="#f6d8bc"/>
+      <path d="M38 100 Q44 40 100 40 Q156 40 162 100 Q150 70 118 64 Q90 80 38 100Z" fill="#e2b85c"/>
+      <circle cx="74" cy="106" r="17" fill="none" stroke="#2e2218" stroke-width="4"/><circle cx="126" cy="106" r="17" fill="none" stroke="#2e2218" stroke-width="4"/>
+      <line x1="91" y1="106" x2="109" y2="106" stroke="#2e2218" stroke-width="4"/>
+      <circle cx="74" cy="106" r="7" fill="#2e2218"/><circle cx="126" cy="106" r="7" fill="#2e2218"/>
+      <circle cx="58" cy="136" r="10" fill="#f19a8a" opacity=".55"/><circle cx="142" cy="136" r="10" fill="#f19a8a" opacity=".55"/>`,
+      spots:[[20,36,14],[64,30,16],[28,60,18],[62,62,15],[44,78,13],[48,40,11],[74,46,12],[34,26,10],[14,54,10],[56,18,9],[40,52,8]]},
+    pelmen:{name:'кота Пельменя',done:'Пельмень пушистый и чистый!',svg:`
+      <path d="M36 92 L44 20 L88 60Z" fill="#9a9aa2"/><path d="M164 92 L156 20 L112 60Z" fill="#9a9aa2"/>
+      <path d="M48 76 L52 40 L76 62Z" fill="#f2b6b0"/><path d="M152 76 L148 40 L124 62Z" fill="#f2b6b0"/>
+      <ellipse cx="100" cy="112" rx="76" ry="66" fill="#b3b3ba"/>
+      <path d="M100 50 L92 74 M84 52 L82 72 M116 52 L118 72" stroke="#8a8a92" stroke-width="6" stroke-linecap="round"/>
+      <ellipse cx="72" cy="104" rx="11" ry="13" fill="#8bbf4a"/><ellipse cx="128" cy="104" rx="11" ry="13" fill="#8bbf4a"/>
+      <ellipse cx="72" cy="104" rx="4" ry="11" fill="#2e2218"/><ellipse cx="128" cy="104" rx="4" ry="11" fill="#2e2218"/>
+      <path d="M92 124 L108 124 L100 132Z" fill="#e0707a"/>
+      <path d="M40 128 L80 132 M40 142 L80 138 M160 128 L120 132 M160 142 L120 138" stroke="#2e2218" stroke-width="2" stroke-linecap="round"/>`,
+      spots:[[22,34,16],[62,26,13],[26,62,17],[64,60,18],[44,78,14],[46,46,12],[74,42,11],[36,22,10],[14,50,12],[52,64,9],[30,44,9],[70,74,10]]}
+  };
+  const stage=$('stage'),kid=$('kid'),sponge=$('sponge');
+  let cur='vika',spotEls=[],t0=0,timerId=0,finished=false,scrubbing=false;
+  function mouthPath(clean){return cur==='pelmen'
+    ?(clean?'<path d="M84 136 Q100 154 116 136" stroke="#2e2218" stroke-width="5" fill="#e0606a" stroke-linecap="round"/>':'<path d="M86 142 Q100 136 114 142" stroke="#2e2218" stroke-width="5" fill="none" stroke-linecap="round"/>')
+    :(clean?'<path d="M74 134 Q100 164 126 134" stroke="#2e2218" stroke-width="5" fill="none" stroke-linecap="round"/>':'<path d="M78 142 Q100 134 122 142" stroke="#2e2218" stroke-width="5" fill="none" stroke-linecap="round"/>')}
+  function drawKid(clean){kid.innerHTML=chars[cur].svg+mouthPath(clean)}
+  function fmt(ms){return (ms/1000).toFixed(1).replace('.',',')+' с'}
+  function showBest(){const b=store.get('wash-best-'+cur,null);$('best').textContent=b?fmt(b):'—'}
+  function update(){
+    const total=spotEls.length,dirt=spotEls.reduce((a,s)=>a+s.dirt,0);
+    const pct=Math.round((1-dirt/total)*100);
+    $('bar').style.width=pct+'%';
+    if(dirt<=0&&!finished){
+      finished=true;clearInterval(timerId);
+      const ms=t0?performance.now()-t0:0;$('time').textContent=fmt(ms);
+      $('status').textContent='Чистота: 100%. '+chars[cur].done;drawKid(true);
+      const r=stage.getBoundingClientRect();for(let i=0;i<5;i++)bubbles(Math.random()*r.width,r.height*.5+Math.random()*r.height*.4);
+      const best=store.get('wash-best-'+cur,null);
+      if(ms&&(!best||ms<best)){store.set('wash-best-'+cur,ms);showBest();toast('Новый рекорд: '+fmt(ms))}
+    } else if(!finished) $('status').textContent='Чистота: '+pct+'%';
+  }
+  function startTimer(){if(t0||finished)return;t0=performance.now();timerId=setInterval(()=>$('time').textContent=fmt(performance.now()-t0),100)}
+  function bubbles(x,y){
+    for(let i=0;i<4;i++){const b=document.createElement('span');b.className='bubble';const s=8+Math.random()*14;
+      b.style.cssText=`width:${s}px;height:${s}px;left:${x+(Math.random()*30-15)}px;top:${y+(Math.random()*20-10)}px`;
+      stage.appendChild(b);setTimeout(()=>b.remove(),1000);}
+  }
+  function rub(s,amount,x,y){
+    if(s.dirt<=0)return;startTimer();
+    s.dirt=Math.max(0,s.dirt-amount);
+    s.el.style.opacity=(0.15+s.dirt*0.85).toFixed(2);
+    if(Math.random()<.35||s.dirt===0)bubbles(x,y);
+    if(s.dirt===0){s.el.classList.add('gone');s.el.disabled=true}
+    update();
+  }
+  function dirty(){
+    stage.querySelectorAll('.spot').forEach(s=>s.remove());
+    clearInterval(timerId);t0=0;finished=false;$('time').textContent=fmt(0);
+    drawKid(false);$('who').textContent=chars[cur].name;
+    spotEls=chars[cur].spots.map(([x,y,w],i)=>{
+      const el=document.createElement('button');el.type='button';el.className='spot';el.id='spot-'+cur+'-'+i;
+      el.setAttribute('aria-label','Пятно грязи '+(i+1));
+      el.style.cssText=`left:${x}%;top:${y}%;width:${w}%;height:${w*.8}%;transform:rotate(${i*37}deg)`;
+      const s={el,dirt:1};
+      el.addEventListener('click',e=>{if(e.detail===0)rub(s,.5,el.offsetLeft+el.offsetWidth/2,el.offsetTop)});
+      stage.appendChild(el);return s;
+    });
+    showBest();update();
+  }
+  function scrubAt(e){
+    const r=stage.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+    sponge.style.left=x+'px';sponge.style.top=y+'px';
+    if(!scrubbing)return;
+    spotEls.forEach(s=>{if(s.dirt<=0)return;const b=s.el.getBoundingClientRect();
+      if(e.clientX>b.left-20&&e.clientX<b.right+20&&e.clientY>b.top-14&&e.clientY<b.bottom+14)rub(s,.09,x,y)});
+  }
+  stage.addEventListener('pointerdown',e=>{scrubbing=true;stage.classList.add('scrubbing');try{stage.setPointerCapture(e.pointerId)}catch(_){}
+    spotEls.forEach(s=>{const b=s.el.getBoundingClientRect();if(e.clientX>b.left&&e.clientX<b.right&&e.clientY>b.top&&e.clientY<b.bottom)rub(s,.3,e.clientX-stage.getBoundingClientRect().left,e.clientY-stage.getBoundingClientRect().top)});
+    scrubAt(e)});
+  stage.addEventListener('pointermove',scrubAt);
+  ['pointerup','pointercancel'].forEach(t=>stage.addEventListener(t,()=>{scrubbing=false;stage.classList.remove('scrubbing')}));
+  document.querySelectorAll('.chars button').forEach(b=>b.addEventListener('click',()=>{
+    cur=b.dataset.char;document.querySelectorAll('.chars button').forEach(x=>x.setAttribute('aria-pressed',x===b));dirty()}));
+  $('again').addEventListener('click',dirty);
+  dirty();
+
+  /* ---------- catch game ---------- */
+  const cv=$('cv'),ctx=cv.getContext('2d'),cbox=$('cbox');
+  let W=0,H=0,dpr=1,game=null,cbest=store.get('catch-best',0);$('cbest').textContent=cbest;
+  function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+  function resize(){const r=cbox.getBoundingClientRect();dpr=window.devicePixelRatio||1;W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);if(!game)drawIdle()}
+  window.addEventListener('resize',resize);
+  const keys={};
+  window.addEventListener('keydown',e=>{if(game&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){keys[e.key]=true;e.preventDefault()}});
+  window.addEventListener('keyup',e=>{keys[e.key]=false});
+  cbox.addEventListener('pointermove',e=>{if(game){const r=cbox.getBoundingClientRect();game.tx=e.clientX-r.left}});
+  cbox.addEventListener('pointerdown',e=>{if(game){const r=cbox.getBoundingClientRect();game.tx=e.clientX-r.left}});
+  function tub(x,y,w){
+    ctx.fillStyle=css('--soap');ctx.beginPath();ctx.moveTo(x-w/2,y);ctx.lineTo(x+w/2,y);ctx.lineTo(x+w/2-10,y+28);ctx.lineTo(x-w/2+10,y+28);ctx.closePath();ctx.fill();
+    ctx.fillStyle=css('--foam');for(let i=-2;i<=2;i++){ctx.beginPath();ctx.arc(x+i*w/6,y,9,0,Math.PI*2);ctx.fill()}
+    ctx.fillStyle=css('--muted');ctx.fillRect(x-w/2+14,y+28,6,8);ctx.fillRect(x+w/2-20,y+28,6,8);
+  }
+  function item(o){
+    if(o.k==='soap'){ctx.fillStyle=css('--soap');ctx.beginPath();ctx.roundRect(o.x-16,o.y-10,32,20,7);ctx.fill();ctx.strokeStyle=css('--foam');ctx.lineWidth=2;ctx.beginPath();ctx.arc(o.x+10,o.y-14,5,0,7);ctx.stroke()}
+    else if(o.k==='duck'){ctx.fillStyle='#f2c230';ctx.beginPath();ctx.ellipse(o.x,o.y+4,16,11,0,0,7);ctx.fill();ctx.beginPath();ctx.arc(o.x+8,o.y-9,9,0,7);ctx.fill();ctx.fillStyle='#e07a2e';ctx.beginPath();ctx.moveTo(o.x+16,o.y-10);ctx.lineTo(o.x+25,o.y-7);ctx.lineTo(o.x+16,o.y-5);ctx.fill();ctx.fillStyle='#2e2218';ctx.beginPath();ctx.arc(o.x+10,o.y-11,2,0,7);ctx.fill()}
+    else{ctx.fillStyle=css('--mud');ctx.beginPath();ctx.ellipse(o.x,o.y,17,14,o.r,0,7);ctx.fill();ctx.beginPath();ctx.arc(o.x-12,o.y+8,6,0,7);ctx.arc(o.x+13,o.y-7,5,0,7);ctx.fill()}
+  }
+  function drawIdle(){ctx.clearRect(0,0,W,H);tub(W/2,H-44,Math.max(90,W*.18))}
+  function lives(n){$('clives').textContent='♥'.repeat(n)+'♡'.repeat(3-n)}
+  function start(){
+    $('cover').hidden=true;resize();
+    game={x:W/2,tx:W/2,w:Math.max(90,W*.18),items:[],score:0,lives:3,t:0,spawn:0,last:performance.now(),speed:1};
+    $('cscore').textContent=0;lives(3);requestAnimationFrame(loop);
+  }
+  function end(){
+    const s=game.score;game=null;
+    let txt='Очки: '+s+'. Рекорд: ';
+    if(s>cbest){cbest=s;store.set('catch-best',s);toast('Новый рекорд ловилки: '+s)}
+    $('coverTitle').textContent=s>=30?'Мыльный чемпион!':s>=10?'Неплохо отмылся':'Грязь победила';
+    $('coverText').textContent=txt+cbest;$('cstart').textContent='Ещё раз';$('cover').hidden=false;drawIdle();
+  }
+  function loop(now){
+    if(!game)return;const g=game,dt=Math.min(50,now-g.last)/16.67;g.last=now;g.t+=dt;g.speed=1+g.t/1800;
+    if(keys.ArrowLeft)g.tx=g.x-14*dt*3;if(keys.ArrowRight)g.tx=g.x+14*dt*3;
+    g.tx=Math.max(g.w/2,Math.min(W-g.w/2,g.tx));g.x+=(g.tx-g.x)*Math.min(1,.25*dt);
+    g.spawn-=dt;
+    if(g.spawn<=0){const r=Math.random();g.items.push({x:20+Math.random()*(W-40),y:-20,k:r<.08?'duck':r<.62?'soap':'mud',v:(1.6+Math.random()*1.4)*g.speed,r:Math.random()*3});g.spawn=Math.max(14,44-g.t/60)}
+    const ty=H-44;
+    for(const o of g.items){o.y+=o.v*dt;
+      if(!o.hit&&o.y>ty-8&&o.y<ty+20&&Math.abs(o.x-g.x)<g.w/2+8){o.hit=true;
+        if(o.k==='mud'){g.lives--;lives(g.lives);toast('Ой, грязь в ванне!')}
+        else{g.score+=o.k==='duck'?3:1;$('cscore').textContent=g.score}}}
+    g.items=g.items.filter(o=>!o.hit&&o.y<H+30);
+    ctx.clearRect(0,0,W,H);g.items.forEach(item);tub(g.x,ty,g.w);
+    if(g.lives<=0){end();return}
+    requestAnimationFrame(loop);
+  }
+  $('cstart').addEventListener('click',start);
+  resize();
+
+  /* ---------- hand timer ---------- */
+  const arc=$('arc'),C=527.8,stepsEl=[...$('steps').children];let hId=0;
+  let washes=store.get('wash-hands-'+new Date().toDateString(),0);
+  function hcount(){$('hcount').textContent=washes?('Сегодня руки вымыты: '+washes+' раз'):''}
+  hcount();
+  $('hstart').addEventListener('click',()=>{
+    if(hId){clearInterval(hId);hId=0;resetH();return}
+    const t0=performance.now();$('hstart').textContent='Стоп';
+    hId=setInterval(()=>{
+      const el=(performance.now()-t0)/1000,left=Math.max(0,20-el);
+      arc.setAttribute('stroke-dashoffset',(C*(1-el/20)).toFixed(1));
+      $('secs').textContent=Math.ceil(left);
+      const st=Math.min(4,Math.floor(el/4));
+      stepsEl.forEach((li,i)=>{li.className=i<st?'done':i===st?'on':''});
+      if(left<=0){clearInterval(hId);hId=0;stepsEl.forEach(li=>li.className='done');
+        $('secs').textContent='✓';$('hstart').textContent='Помыть ещё раз';
+        washes++;store.set('wash-hands-'+new Date().toDateString(),washes);hcount();toast('Руки чистые! Не забудь вытереть полотенцем')}
+    },100);
+  });
+  function resetH(){arc.setAttribute('stroke-dashoffset',C);$('secs').textContent='20';stepsEl.forEach(li=>li.className='');$('hstart').textContent='Включить воду'}
+
+  /* ---------- dirt types ---------- */
+  const types=[
+    ['Отмывается за 10 минут','Гора посуды','Растёт в раковине с понедельника. К пятнице у неё появляется своя экосистема.','Замочить в горячей воде с каплей средства, потом губка. А лучше мыть сразу после ужина.'],
+    ['Разбирается за 5 минут','Стул-шкаф','На нём живут вещи «ещё не грязные, но уже не чистые». Сам стул никто не видел с прошлой весны.','Чистое — в шкаф, ношеное — в стирку. Решать сразу, а не «потом».'],
+    ['Отстирывается при 40°','Тушь на подушке','След от макияжа, который было лень смывать в три часа ночи.','Мицеллярная вода перед сном, а наволочку — в стирку.'],
+    ['Выносится за 3 минуты','Башня из коробок от пиццы','Стоит у мусорного ведра и растёт быстрее любого небоскрёба.','Сложить коробки плоско и вынести в макулатуру по пути на улицу.'],
+    ['Отмывается за 20 минут','Раковина в ванной','Волосы, зубная паста, крем без крышки и три пустых флакона шампуня.','Чистящее средство, старая щётка и пакет для пустых флаконов.'],
+    ['Не отмывается','Кофе на ноутбуке','Высшая лига. Клавиша «Ж» теперь залипает навсегда.','Выключить, перевернуть, сушить сутки. Кружку больше не ставить рядом.']];
+  $('types').innerHTML=types.map((t,i)=>`<button class="type" type="button" id="type-${i}" aria-expanded="false"><span class="lvl">${t[0]}</span><h3>${t[1]}</h3><p class="desc">${t[2]}</p><p class="how" hidden>${t[3]}</p><span class="hint">Как отмыть?</span></button>`).join('');
+  $('types').addEventListener('click',e=>{const b=e.target.closest('.type');if(!b)return;
+    const open=b.getAttribute('aria-expanded')!=='true';b.setAttribute('aria-expanded',open);
+    b.querySelector('.how').hidden=!open;b.querySelector('.desc').hidden=open;b.querySelector('.hint').textContent=open?'Назад к описанию':'Как отмыть?'});
+
+  /* ---------- checklist ---------- */
+  const tasks=['Умыться утром','Почистить зубы утром','Помыть посуду после завтрака','Застелить кровать','Разобрать стул с одеждой','Вынести мусор','Протереть раковину','Смыть макияж перед сном','Почистить зубы вечером'];
+  const kkey='checklist-'+new Date().toDateString();let done=store.get(kkey,[]);
+  $('checklist').innerHTML=tasks.map((t,i)=>`<label for="task-${i}"><input type="checkbox" id="task-${i}" ${done.includes(i)?'checked':''}><span>${t}</span></label>`).join('');
+  function kupdate(){
+    const pct=Math.round(done.length/tasks.length*100);$('kpct').textContent=pct+'%';
+    const stars=pct>=100?3:pct>=66?2:pct>=33?1:0;
+    [...$('kstars').children].forEach((s,i)=>s.className=i<stars?'lit':'');
+    $('ktext').textContent=pct>=100?'Настоящий чистюля!':pct>=66?'Почти блестишь':pct>=33?'Хорошее начало':'Начни с утренних дел';
+  }
+  $('checklist').addEventListener('change',e=>{const i=+e.target.id.split('-')[1];
+    done=e.target.checked?[...new Set([...done,i])]:done.filter(x=>x!==i);store.set(kkey,done);kupdate();
+    if(done.length===tasks.length)toast('Все дела сделаны. Ты чистюля дня!')});
+  $('kreset').addEventListener('click',()=>{done=[];store.set(kkey,done);$('checklist').querySelectorAll('input').forEach(i=>i.checked=false);kupdate()});
+  kupdate();
+
+  /* ---------- big quiz ---------- */
+  // each answer: [text, mud points 0..3, reaction]
+  const QZ=[
+    ['Утро. Ты проснулась. Где твоя вчерашняя одежда?',[
+      ['В шкафу или в корзине для стирки',0,'Образцовое утро.'],
+      ['Аккуратно висит на стуле',1,'Стул снова при деле.'],
+      ['На полу, там, где сняла',2,'Дорожка из одежды до кровати.'],
+      ['Я в ней и проснулась',3,'Сэкономила время на одевание.']]],
+    ['Сколько посуды сейчас в раковине?',[
+      ['Ноль, я мою сразу',0,'Раковина сияет.'],
+      ['Пара кружек',1,'Кружки ждут своей очереди.'],
+      ['Гора, но я её контролирую',2,'Гора контролирует тебя.'],
+      ['Тарелки кончились, ем из крышки кастрюли',3,'Изобретательно.']]],
+    ['Вернулась поздно с вечеринки. Что с макияжем?',[
+      ['Смываю, крем, спать',0,'Кожа благодарна.'],
+      ['Смываю только тушь',1,'Половина подвига.'],
+      ['Протираю салфеткой, сойдёт',2,'Подушка всё запомнит.'],
+      ['Сплю в нём, утром будет образ «панда»',3,'Панда — тоже стиль.']]],
+    ['Что лежит в твоей сумке?',[
+      ['Только нужное',0,'Сумка мечты.'],
+      ['Чеки за последний месяц',1,'Бухгалтерия на ходу.'],
+      ['Фантики, наушники узлом и полбулочки',2,'Булочка уже не та.'],
+      ['Не знаю, боюсь заглядывать',3,'Сумка живёт своей жизнью.']]],
+    ['Когда ты последний раз меняла постельное бельё?',[
+      ['На этой неделе',0,'Свежо и хрустит.'],
+      ['Пару недель назад',1,'Ещё терпимо.'],
+      ['В прошлом месяце, наверное',2,'Наволочка грустит.'],
+      ['Это то, что было в комплекте с кроватью?',3,'Бельё помнит лучшие времена.']]],
+    ['Подруга пишет: «Через 10 минут буду у тебя». Твои действия?',[
+      ['Ставлю чайник, дома и так чисто',0,'Королева гостеприимства.'],
+      ['Быстро протираю стол',1,'Быстро и по делу.'],
+      ['Запихиваю всё в шкаф и держу дверцу',2,'Главное, чтобы она не открыла шкаф.'],
+      ['Встречаю у подъезда и веду в кафе',3,'Квартира останется тайной.']]],
+    ['Что у тебя в холодильнике?',[
+      ['Чисто, продукты по полочкам',0,'Как в рекламе.'],
+      ['Пара забытых баночек',1,'С кем не бывает.'],
+      ['Йогурт, который просрочился весной',2,'Йогурт стал сыром.'],
+      ['Там кто-то живёт и уже даёт имена',3,'Привет соседям.']]],
+    ['Где сейчас твои фен, расчёска и косметичка?',[
+      ['На своих местах',0,'Всё под рукой.'],
+      ['В ванной, все вместе',1,'Почти порядок.'],
+      ['В трёх разных комнатах',2,'Квест каждое утро.'],
+      ['Расчёску я не видела с лета',3,'Причёска «свободная».']]],
+    ['Ты пролила кофе на стол. Что дальше?',[
+      ['Сразу вытираю',0,'Стол спасён.'],
+      ['Вытру, когда допью',1,'Кофе важнее.'],
+      ['Ставлю кружку прямо в лужу, так она не скользит',2,'Физика на твоей стороне.'],
+      ['Высохнет само, это же кофе',3,'Стол теперь липкий навсегда.']]],
+    ['Сколько у тебя открытых флаконов шампуня?',[
+      ['Один',0,'Минимализм.'],
+      ['Два: обычный и для красоты',1,'Разумно.'],
+      ['Пять, все почти пустые',2,'В каждом ещё «на разок».'],
+      ['Я уже не считаю, это коллекция',3,'Музей шампуня.']]],
+    ['Как часто ты выносишь мусор?',[
+      ['Как только ведро наполнится',0,'Идеально.'],
+      ['Когда ведро уже полное',1,'Почти вовремя.'],
+      ['Когда пакет стоит рядом с ведром',2,'Пакет устал ждать.'],
+      ['Когда пакетов у двери больше, чем обуви',3,'Мусорная выставка.']]],
+    ['Чистые вещи после стирки:',[
+      ['Сразу складываю в шкаф',0,'Шкаф доволен.'],
+      ['Лежат в корзине, беру оттуда',1,'Корзина-гардероб.'],
+      ['Сушилка — мой второй шкаф',2,'Удобно, но нет.'],
+      ['Хожу в том, что высохло последним',3,'Мода по принципу лотереи.']]]];
+  const LEVELS=[
+    ['Сверкающая чистюлька',0,10,'Твоя квартира как из рекламы чистящего средства. Пыль боится заходить к тебе в гости.',['Поделись лайфхаками с подругами','Иногда можно оставить кружку до утра, мир не рухнет','Сыграй в «Найди пару» для отдыха']],
+    ['Чистюлька',11,25,'Порядок у тебя в крови. Бывает, что кружка задержится в раковине, но не дольше вечера.',['Пройди чек-лист до 100%','Разбери сумку, там наверняка пара чеков','Продолжай в том же духе']],
+    ['Аккуратистка',26,42,'Дома в целом уютно, просто у порядка иногда выходной. Гостей не стыдно позвать, если предупредят за час.',['Мой посуду сразу после еды','Правило одной минуты: мелочи делай сразу','Смывай макияж каждый вечер']],
+    ['Немножко неряшка',43,60,'Стул уже стал шкафом, а в раковине живёт пара кружек. Хаос под контролем, но контроль слабеет.',['Разбери стул с одеждой прямо сегодня','Включи таймер мытья рук на этом сайте','Вынеси мусор по пути на улицу']],
+    ['Грязнулька',61,80,'Поздравляем, ты настоящая грязнулька! Посуда копится, вещи живут на сушилке, а пакеты с мусором выстроились у двери.',['Срочно отмой Вику в отмывалке','Начни с одной зоны: раковина, стол или стул','Поставь напоминание выносить мусор']],
+    ['Великая грязнулька',81,100,'Легенда района. В холодильнике зародилась цивилизация, а подруги встречаются с тобой только в кафе.',['Включи музыку и устрой генеральную уборку','Выкинь йогурт, который стал сыром','Попроси подругу Иру помочь, а потом угости её пиццей']]];
+  const mudSpots=[[60,70,14],[140,74,12],[50,130,15],[150,128,16],[100,160,13],[86,60,9],[120,112,8],[36,100,10],[166,100,10],[70,150,9],[132,154,10],[100,84,7]];
+  $('qzMud').innerHTML=mudSpots.map(([x,y,r],i)=>`<ellipse class="m" cx="${x}" cy="${y}" rx="${r}" ry="${r*.8}" fill="#6b4a2b" opacity="0" transform="rotate(${i*31} ${x} ${y})"/>`).join('');
+  const MAX=QZ.length*3;let qi=0,ans=[],qlock=false;
+  function qzScore(){return ans.reduce((a,p)=>a+p,0)}
+  function qzDraw(){
+    const s=qzScore(),pct=Math.round(s/MAX*100);
+    $('qzMeter').style.width=pct+'%';
+    const n=Math.round(s/MAX*mudSpots.length*1.0);
+    [...$('qzMud').children].forEach((e,i)=>e.setAttribute('opacity',i<n?'.85':'0'));
+    $('qzMouth').setAttribute('d',pct<35?'M74 134 Q100 164 126 134':pct<65?'M78 140 L122 140':'M78 146 Q100 130 122 146');
+  }
+  function qzShow(){
+    $('qzRes').hidden=true;$('qz').hidden=false;qlock=false;
+    const q=QZ[qi];$('qzNum').textContent='Вопрос '+(qi+1)+' из '+QZ.length;
+    $('qzBar').style.width=(qi/QZ.length*100)+'%';$('qzBack').hidden=qi===0;
+    $('qzQ').textContent=q[0];$('qzReact').textContent='';
+    $('qzA').innerHTML=q[1].map((a,j)=>`<button type="button" id="qa-${qi}-${j}" data-j="${j}">${a[0]}</button>`).join('');
+    qzDraw();
+  }
+  $('qzA').addEventListener('click',e=>{
+    const b=e.target.closest('button');if(!b||qlock)return;qlock=true;
+    const a=QZ[qi][1][+b.dataset.j];ans[qi]=a[1];ans.length=qi+1;
+    b.classList.add('picked');$('qzReact').textContent=a[2];qzDraw();
+    setTimeout(()=>{qi++;if(qi<QZ.length)qzShow();else qzResult()},900);
+  });
+  $('qzBack').addEventListener('click',()=>{if(qi>0){qi--;ans.length=qi;qzShow()}});
+  function qzResult(){
+    const pct=Math.round(qzScore()/MAX*100);
+    const li=LEVELS.findIndex(l=>pct>=l[1]&&pct<=l[2]),L=LEVELS[li];
+    $('qz').hidden=true;$('qzRes').hidden=false;
+    $('qzTitle').textContent=L[0];$('qzDesc').textContent=L[3];
+    $('qzPct').textContent=pct+'% грязи';
+    $('qzLevels').innerHTML=LEVELS.map((l,i)=>`<li class="${i===li?'me':''}"><span>${l[0]}</span><small>${l[1]}–${l[2]}%</small></li>`).join('');
+    $('qzTips').innerHTML=L[4].map(t=>`<li>${t}</li>`).join('');
+    const mark=$('qzMark');mark.style.left='0%';requestAnimationFrame(()=>requestAnimationFrame(()=>mark.style.left=Math.min(98,Math.max(2,pct))+'%'));
+    $('qzRes').scrollIntoView({behavior:'smooth',block:'start'});
+    store.set('quiz-last',{pct,level:L[0]});
+  }
+  $('qzAgain').addEventListener('click',()=>{qi=0;ans=[];qzShow();$('qz').scrollIntoView({behavior:'smooth',block:'center'})});
+  qzShow();
+  /* ---------- bubbles ---------- */
+  const bcv=$('bcv'),bctx=bcv.getContext('2d'),bbox=$('bbox');
+  let BW=0,BH=0,bg=null,bbest=store.get('bubble-best',0);$('bbest').textContent=bbest;
+  function bresize(){const r=bbox.getBoundingClientRect(),d=window.devicePixelRatio||1;BW=r.width;BH=r.height;bcv.width=BW*d;bcv.height=BH*d;bctx.setTransform(d,0,0,d,0,0);bdraw()}
+  window.addEventListener('resize',bresize);
+  function bdraw(){
+    bctx.clearRect(0,0,BW,BH);if(!bg)return;
+    for(const b of bg.list){
+      if(b.pop){bctx.strokeStyle=css('--soap');bctx.globalAlpha=Math.max(0,1-b.pop/10);bctx.lineWidth=2;
+        for(let i=0;i<6;i++){const a=i*Math.PI/3,r1=b.r+b.pop*2;bctx.beginPath();bctx.moveTo(b.x+Math.cos(a)*b.r,b.y+Math.sin(a)*b.r);bctx.lineTo(b.x+Math.cos(a)*r1,b.y+Math.sin(a)*r1);bctx.stroke()}
+        bctx.globalAlpha=1;continue}
+      bctx.beginPath();bctx.arc(b.x,b.y,b.r,0,7);
+      if(b.mud){bctx.fillStyle=css('--mud');bctx.globalAlpha=.85;bctx.fill();bctx.globalAlpha=1}
+      else{bctx.fillStyle=css('--soap');bctx.globalAlpha=.15;bctx.fill();bctx.globalAlpha=1;bctx.strokeStyle=css('--soap');bctx.lineWidth=2.5;bctx.stroke()}
+      bctx.fillStyle='rgba(255,255,255,.75)';bctx.beginPath();bctx.arc(b.x-b.r*.35,b.y-b.r*.35,b.r*.18,0,7);bctx.fill();
+    }
+  }
+  function bstart(){
+    $('bcover').hidden=true;bresize();
+    bg={list:[],score:0,end:performance.now()+30000,last:performance.now(),spawn:0};
+    $('bscore').textContent=0;requestAnimationFrame(bloop);
+  }
+  function bloop(now){
+    if(!bg)return;const dt=Math.min(50,now-bg.last)/16.67;bg.last=now;
+    const left=Math.max(0,(bg.end-now)/1000);$('btime').textContent=Math.ceil(left);
+    bg.spawn-=dt;
+    if(bg.spawn<=0){const mud=Math.random()<.18,r=mud?22+Math.random()*10:12+Math.random()*28;
+      bg.list.push({x:r+Math.random()*(BW-2*r),y:BH+r,r,mud,v:.8+Math.random()*1.4+(30-left)/25,w:Math.random()*6,pop:0});bg.spawn=10+Math.random()*12}
+    for(const b of bg.list){if(b.pop){b.pop+=dt}else{b.y-=b.v*dt;b.w+=.05*dt;b.x+=Math.sin(b.w)*.6*dt}}
+    bg.list=bg.list.filter(b=>b.pop<10&&b.y>-b.r-10);
+    bdraw();
+    if(left<=0){const s=bg.score;bg=null;bdraw();
+      if(s>bbest){bbest=s;store.set('bubble-best',s);toast('Новый рекорд пузырей: '+s)}
+      $('bTitle').textContent=s>=40?'Король пены!':s>=20?'Отличная пена':'Пена кончилась';
+      $('bText').textContent='Очки: '+s+'. Рекорд: '+bbest;$('bstart').textContent='Ещё раз';$('bcover').hidden=false;return}
+    requestAnimationFrame(bloop);
+  }
+  bbox.addEventListener('pointerdown',e=>{
+    if(!bg)return;const r=bbox.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+    for(let i=bg.list.length-1;i>=0;i--){const b=bg.list[i];if(b.pop)continue;
+      if(Math.hypot(b.x-x,b.y-y)<=b.r+6){b.pop=1;
+        bg.score=Math.max(0,bg.score+(b.mud?-3:b.r<22?2:1));$('bscore').textContent=bg.score;
+        if(b.mud)toast('Фу, грязевой пузырь!');break}}
+  });
+  $('bstart').addEventListener('click',bstart);
+  bresize();
+
+  /* ---------- memory ---------- */
+  const mitems=[['🧼','мыло'],['🧽','губка'],['🪥','зубная щётка'],['🦆','уточка'],['🧴','шампунь'],['🛁','ванна'],['🧦','носки'],['🪣','ведро']];
+  let mdeck=[],mopen=[],mmoves=0,mfound=0,mlock=false;
+  function mbestShow(){const b=store.get('memo-best',null);$('mbest').textContent=b??'—'}
+  function mnew(){
+    mdeck=[...mitems,...mitems].map((x,i)=>({e:x[0],n:x[1],k:i})).sort(()=>Math.random()-.5);
+    mopen=[];mmoves=0;mfound=0;mlock=false;$('mmoves').textContent=0;$('mpairs').textContent='0 / 8';
+    $('memo').innerHTML=mdeck.map((c,i)=>`<button class="mcard" type="button" id="mc-${i}" data-i="${i}" aria-label="Закрытая карточка ${i+1}"><span>?</span></button>`).join('');
+    mbestShow();
+  }
+  $('memo').addEventListener('click',e=>{
+    const b=e.target.closest('.mcard');if(!b||mlock)return;const i=+b.dataset.i;
+    if(b.classList.contains('open')||b.classList.contains('found'))return;
+    b.classList.add('open');b.firstChild.textContent=mdeck[i].e;b.setAttribute('aria-label',mdeck[i].n);
+    mopen.push(i);
+    if(mopen.length===2){
+      mmoves++;$('mmoves').textContent=mmoves;
+      const [a,c]=mopen,ea=$('mc-'+a),ec=$('mc-'+c);
+      if(mdeck[a].e===mdeck[c].e){
+        [ea,ec].forEach(x=>{x.classList.remove('open');x.classList.add('found')});mopen=[];mfound++;
+        $('mpairs').textContent=mfound+' / 8';
+        if(mfound===8){const best=store.get('memo-best',null);
+          if(!best||mmoves<best){store.set('memo-best',mmoves);toast('Новый рекорд: '+mmoves+' ходов')}else toast('Все пары найдены за '+mmoves+' ходов');mbestShow()}
+      } else {mlock=true;setTimeout(()=>{[ea,ec].forEach((x,j)=>{x.classList.remove('open');x.firstChild.textContent='?';x.setAttribute('aria-label','Закрытая карточка '+(+x.dataset.i+1))});mopen=[];mlock=false},800)}
+    }
+  });
+  $('mnew').addEventListener('click',mnew);
+  mnew();
+
+  /* ---------- true / false ---------- */
+  const claims=[
+    ['Мыло убивает микробов, только если вода горячая.',0,'Выдумка. Мыло работает и в прохладной воде. Главное — тереть руки не меньше 20 секунд.'],
+    ['Свиньи валяются в грязи, чтобы охладиться.',1,'Правда. Свиньи почти не потеют, а мокрая грязь спасает их от жары и укусов насекомых.'],
+    ['Если уронить печенье и быстро поднять за 5 секунд, оно останется чистым.',0,'Выдумка. Микробы прилипают к еде почти мгновенно, особенно к влажной.'],
+    ['Зубную щётку нужно менять примерно раз в три месяца.',1,'Правда. Щетинки изнашиваются и хуже чистят зубы.'],
+    ['Кошки моются языком, потому что боятся воды.',0,'Выдумка. Кошки вылизываются, чтобы ухаживать за шерстью и охлаждаться. Некоторые кошки воду даже любят.'],
+    ['Под ногтями собирается больше всего микробов на руках.',1,'Правда. Поэтому при мытье рук трут и кончики пальцев.'],
+    ['Мыльные пузыри бывают квадратными.',0,'Выдумка. Одиночный пузырь всегда круглый: так плёнке нужно меньше всего мыла. Квадратные грани бывают только в пене, где пузыри слиплись.'],
+    ['Слоны обсыпают себя пылью, чтобы не обгореть на солнце.',1,'Правда. Пыль и грязь работают как солнцезащитный крем.'],
+    ['Полотенце можно не стирать, ведь им вытирают уже чистое тело.',0,'Выдумка. На влажном полотенце быстро размножаются микробы. Его стирают раз в 3–4 дня.'],
+    ['Древние римляне чистили кожу оливковым маслом и скребком.',1,'Правда. Масло наносили на тело, а потом соскребали вместе с грязью специальным скребком.'],
+    ['Руки можно не мыть, если они выглядят чистыми.',0,'Выдумка. Микробы слишком маленькие, их не видно. Руки моют перед едой и после улицы, даже если они кажутся чистыми.'],
+    ['Пена в ванне сама по себе не делает воду чище.',1,'Правда. Отмывает мыло вместе с мочалкой, а пена просто весёлая.']];
+  let tfq=[],tfi=0,tfok=0,tfres=[];
+  function tfnew(){tfq=[...claims].sort(()=>Math.random()-.5).slice(0,8);tfi=0;tfok=0;tfres=[];tfshow()}
+  function tfshow(){
+    $('tfprog').innerHTML=tfq.map((_,i)=>`<i class="${tfres[i]===true?'ok':tfres[i]===false?'no':''}"></i>`).join('');
+    $('tfexp').hidden=true;$('tfnext').hidden=true;$('tfbtns').hidden=false;
+    if(tfi>=tfq.length){
+      $('tfnum').textContent='Итог';
+      $('tfclaim').textContent=tfok+' из '+tfq.length+'. '+(tfok===tfq.length?'Профессор чистоты!':tfok>=6?'Отличный знаток гигиены.':tfok>=4?'Неплохо, но есть что узнать.':'Грязнульки довольны. Попробуй ещё раз!');
+      $('tfbtns').hidden=true;$('tfnext').textContent='Сыграть снова';$('tfnext').hidden=false;
+      const best=store.get('tf-best',0);if(tfok>best)store.set('tf-best',tfok);return}
+    $('tfnum').textContent='Вопрос '+(tfi+1)+' из '+tfq.length;$('tfclaim').textContent=tfq[tfi][0];
+  }
+  $('tfbtns').addEventListener('click',e=>{
+    const b=e.target.closest('button');if(!b)return;
+    const ok=+b.dataset.a===tfq[tfi][1];if(ok)tfok++;tfres[tfi]=ok;
+    $('tfexp').textContent=(ok?'Верно! ':'Не угадал. ')+tfq[tfi][2];$('tfexp').className='explain'+(ok?'':' wrong');$('tfexp').hidden=false;
+    $('tfbtns').hidden=true;$('tfnext').textContent=tfi===tfq.length-1?'Узнать итог':'Дальше';$('tfnext').hidden=false;
+    $('tfprog').children[tfi].className=ok?'ok':'no';
+  });
+  $('tfnext').addEventListener('click',()=>{if(tfi>=tfq.length){tfnew();return}tfi++;tfshow()});
+  tfnew();
+})();
+</script>
+</body>
+</html>
