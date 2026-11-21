@@ -1318,9 +1318,9 @@ ${p.pq2?`- ${p.pq2}: ${p.pa2}\n`:''}- грязнулька-метр: ${p.g}/10
   const guest=id=>id===myId?'Ты (тест)':'Гость '+id.slice(-4).toUpperCase();
   function renderAdmList(){
     $('admEmpty').hidden=admList.length>0;
-    $('admList').innerHTML=admList.map(c=>{const last=(c.msgs||[])[c.msgs.length-1];const pr=PROFILES.find(p=>p.n===c.who);
+    $('admList').innerHTML=admList.map(c=>{const last=(c.msgs||[]).slice(-1)[0];const pr=PROFILES.find(p=>p.n===c.who);
       return `<button type="button" class="adm-item${admSel===c.id?' on':''}" id="adm-${c.id}" data-id="${c.id}"><span class="adm-av">${pr?photo(pr.look,'78 46 84 84'):''}</span><span class="adm-txt"><b></b><small></small></span><span class="adm-time">${c.updatedAt?ago(c.updatedAt):''}</span>${last&&last.from==='me'?'<i class="adm-dot"></i>':''}</button>`}).join('');
-    [...$('admList').children].forEach((b,i)=>{const c=admList[i],last=(c.msgs||[])[c.msgs.length-1];
+    [...$('admList').children].forEach((b,i)=>{const c=admList[i],last=(c.msgs||[]).slice(-1)[0];
       b.querySelector('b').textContent=guest(c.id)+' → '+(c.who||'?');b.querySelector('small').textContent=last?(last.from==='me'?'': (c.who||'')+': ')+last.text:'нет сообщений'});
   }
   function selectChat(id){
